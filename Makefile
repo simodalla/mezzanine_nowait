@@ -27,13 +27,13 @@ lint:
 	flake8 mezzanine_nowait tests
 
 test:
-	python runtests.py test
+	python project_template/manage.py test mezzanine_nowait
 
 test-all:
 	tox
 
 coverage:
-	coverage run --source mezzanine_nowait setup.py test
+	coverage run --source mezzanine_nowait project_template/manage.py test mezzanine_nowait
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
