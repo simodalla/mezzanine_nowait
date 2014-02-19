@@ -26,7 +26,8 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='Mezzanine NoWait',
     version=version,
-    description="""Mezzanine app for manage public reservations for government offices""",
+    description="""Mezzanine app for manage public reservations for government
+offices""",
     long_description=readme + '\n\n' + history,
     author='Simone Dalla',
     author_email='simodalla@gmail.com',
