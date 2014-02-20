@@ -65,6 +65,9 @@ urlpatterns += patterns('',
     # FOR PAGES, SO URLPATTERNS ADDED BELOW ``mezzanine.urls``
     # WILL NEVER BE MATCHED!
 
+    ("^nowait/", include("mezzanine_nowait.urls",
+                         namespace='mezzanine_nowait')),
+
     # If you'd like more granular control over the patterns in
     # ``mezzanine.urls``, go right ahead and take the parts you want
     # from it, and use them directly below instead of using

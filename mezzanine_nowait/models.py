@@ -41,7 +41,7 @@ class Calendar(TimeStampedModel):
         verbose_name_plural = _('calendars')
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return self.name
 
 
 @python_2_unicode_compatible
@@ -55,11 +55,12 @@ class Email(TimeStampedModel):
 
 @python_2_unicode_compatible
 class BookingType(Displayable):
-    calendar = models.ForeignKey(Calendar, verbose_name=_('calendar'))
     slot_length = models.PositiveIntegerField(
         _('slot length'), default=30,
         help_text=_('Length in minutes of slot time.'))
     info = RichTextField(_('info'), blank=True)
+    calendar = models.ForeignKey(Calendar, verbose_name=_('calendar'),
+                                 blank=True, null=True)
     notes = RichTextField(_('notes'), blank=True)
     operators = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, null=True,
@@ -77,4 +78,8 @@ class BookingType(Displayable):
         unique_together = ('calendar', 'title')
 
     def __str__(self):
-        return u'{} {}'.format(self._meta.verbose_name, self.title)
+        return '%s %s' % (self._meta.verbose_name, self.title)
+
+    def get_absolute_url(self):
+        return reverse('mezzanine_nowait:bookingtype_detail',
+                       kwargs={'slug': self.slug})
