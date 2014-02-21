@@ -32,9 +32,12 @@ test:
 test-all:
 	tox
 
-coverage:
-	coverage run --source mezzanine_nowait --omit=*/migrations/* project_template/manage.py test mezzanine_nowait
+coverage-console:
+	coverage run --source mezzanine_nowait --omit=mezzanine_nowait/migrations/*,mezzanine_nowait/tests/factories.py project_template/manage.py test mezzanine_nowait
 	coverage report -m
+
+coverage:
+	coverage-console
 	coverage html
 	open htmlcov/index.html
 
