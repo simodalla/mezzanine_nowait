@@ -253,17 +253,17 @@ class SlotTimeModelTest(TestCase):
         slottime_over.end = slottime.end + timedelta(minutes=15)
         self.assertRaises(ValidationError, slottime_over.save)
 
-    def test_admin_calendar_method(self):
-        bookingtype = BookingTypeF()
-        start = now()
-        end = start + timedelta(minutes=30)
-        slottime = SlotTime.objects.create(booking_type=bookingtype,
-                                           start=start, end=end)
-        self.assertEqual(
-            slottime.admin_calendar(),
-            '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
-                url=reverse('admin:nowait_calendar_changelist'),
-                calendar=bookingtype.calendar))
+    # def test_admin_calendar_method(self):
+    #     bookingtype = BookingTypeF()
+    #     start = now()
+    #     end = start + timedelta(minutes=30)
+    #     slottime = SlotTime.objects.create(booking_type=bookingtype,
+    #                                        start=start, end=end)
+    #     self.assertEqual(
+    #         slottime.admin_calendar(),
+    #         '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
+    #             url=reverse('admin:nowait_calendar_changelist'),
+    #             calendar=bookingtype.calendar))
 
 
 class SlotTimeManagersTest(TestCase):
