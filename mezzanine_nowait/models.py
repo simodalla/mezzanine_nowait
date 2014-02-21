@@ -3,6 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 import warnings
 
+from django.core.mail import send_mail
+
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
@@ -16,8 +18,7 @@ from mezzanine.core.fields import RichTextField
 from mezzanine.pages.models import Displayable
 from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusField
-#
-# from .core import get_range_days, get_week_map_by_weekday
+from .core import get_range_days, get_week_map_by_weekday
 
 try:
     #noinspection PyUnresolvedReferences
@@ -124,46 +125,69 @@ class SlotTimesGeneration(TimeStampedModel):
     def __str__(self):
         return '%s n.%s' % (self._meta.verbose_name, self.pk)
 
-    #noinspection PyTypeChecker,PyTypeChecker
-    # def create_slot_times(self):
-    #     try:
-    #         days = get_week_map_by_weekday(
-    #             get_range_days(self.start_date, self.end_date))
-    #     except Exception as e:
-    #         raise e
-    #
-    #     if self.booking_type.dailyslottimepattern_set.count() == 0:
-    #         raise ValueError("{} has no related DailySlotTimePattern "
-    #                          "objects".format(self.booking_type.name))
-    #
-    #     count = 0
-    #     for pattern in self.booking_type.dailyslottimepattern_set.all():
-    #         for day in days[str(pattern.day)]:
-    #             cache_start_datetime = make_aware(
-    #                 datetime.combine(day, pattern.start_time),
-    #                 get_current_timezone())
-    #             end_datetime = make_aware(
-    #                 datetime.combine(day, pattern.end_time),
-    #                 get_current_timezone())
-    #             while (((end_datetime - cache_start_datetime).seconds / 60)
-    #                        >= pattern.booking_type.slot_length):
-    #                 start_slot = cache_start_datetime
-    #                 end_slot = cache_start_datetime + timedelta(
-    #                     minutes=pattern.booking_type.slot_length)
-    #                 try:
-    #                     slot, created = (
-    #                         self.slottime_set.get_or_create(
-    #                             booking_type=pattern.booking_type,
-    #                             calendar=pattern.booking_type.calendar,
-    #                             start=start_slot,
-    #                             end=end_slot,
-    #                             user=self.user))
-    #                     if created:
-    #                         count += 1
-    #                 except ValidationError:
-    #                     pass
-    #                 cache_start_datetime = end_slot
-    #     return count,
+    def create_slot_times(self):
+        try:
+            days = get_week_map_by_weekday(
+                get_range_days(self.start_date, self.end_date))
+        except Exception as e:
+            raise e
+
+        if self.booking_type.dailyslottimepattern_set.count() == 0:
+            raise ValueError("{} has no related DailySlotTimePattern "
+                             "objects".format(self.booking_type.title))
+
+        count = 0
+        for pattern in self.booking_type.dailyslottimepattern_set.all():
+            for day in days[str(pattern.day)]:
+                cache_start_datetime = make_aware(
+                    datetime.combine(day, pattern.start_time),
+                    get_current_timezone())
+                end_datetime = make_aware(
+                    datetime.combine(day, pattern.end_time),
+                    get_current_timezone())
+                while (((end_datetime - cache_start_datetime).seconds / 60)
+                           >= pattern.booking_type.slot_length):
+                    start_slot = cache_start_datetime
+                    end_slot = cache_start_datetime + timedelta(
+                        minutes=pattern.booking_type.slot_length)
+                    try:
+                        slot, created = (
+                            self.slottime_set.get_or_create(
+                                booking_type=pattern.booking_type,
+                                start=start_slot,
+                                end=end_slot,
+                                user=self.user))
+                        if created:
+                            count += 1
+                    except ValidationError:
+                        pass
+                    cache_start_datetime = end_slot
+        return count,
+
+
+class FreeSlotTimeManager(models.Manager):
+    def get_query_set(self):
+        return super(FreeSlotTimeManager, self).get_query_set().filter(
+            status=SlotTime.STATUS.free)
+
+    # def get_for_booking(self, booking_type, start=None, days_start=1,
+    #                     days_end=95):
+    #     if not start:
+    #         _now = now()
+    #         start = make_aware(
+    #             datetime(_now.year, _now.month, _now.day, 0, 1),
+    #             get_current_timezone())
+    #     qs = self.get_query_set()
+    #     return qs.filter(
+    #         booking_type=booking_type,
+    #         start__gt=start + timedelta(days=days_start),
+    #         end__lt=start + timedelta(days=days_end)).order_by('start')
+
+
+class TakenSlotTimeManager(models.Manager):
+    def get_query_set(self):
+        return super(TakenSlotTimeManager, self).get_query_set().filter(
+            status=SlotTime.STATUS.taken)
 
 
 @python_2_unicode_compatible
@@ -173,8 +197,6 @@ class SlotTime(TimeStampedModel):
                                    verbose_name=_('generation'))
     booking_type = models.ForeignKey(BookingType,
                                      verbose_name=_('booking type'))
-    calendar = models.ForeignKey(Calendar, blank=True, null=True,
-                                 verbose_name=_('calendar'))
     start = models.DateTimeField(_('start'))
     end = models.DateTimeField(_('end'))
     status = StatusField(_('status'), default=STATUS.free)
@@ -182,8 +204,8 @@ class SlotTime(TimeStampedModel):
                              verbose_name=_('user'))
 
     objects = models.Manager()
-    # free = FreeSlotTimeManager()
-    # taken = TakenSlotTimeManager()
+    free = FreeSlotTimeManager()
+    taken = TakenSlotTimeManager()
 
     class Meta:
         verbose_name = _('slot time')
@@ -193,6 +215,28 @@ class SlotTime(TimeStampedModel):
     def __str__(self):
         return ('{self._meta.verbose_name} {self.start:%A %d %B %Y %H:%M}'
                 ' - {self.end:%A %d %B %Y %H:%M}'.format(self=self))
+
+    def clean(self):
+        if SlotTime.objects.exclude(pk=self.pk).filter(
+                start__lte=self.start, end__gt=self.start).count() > 0:
+            raise ValidationError("{} n.[{}] overlaps with other.".format(
+                self.__class__.__name__, self.pk, self))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.clean()
+        return super(SlotTime, self).save(
+            force_insert=force_insert, force_update=force_update, using=using,
+            update_fields=update_fields)
+
+    def admin_calendar(self):
+        return '<a href="{}?id={}">{}</a>'.format(
+            reverse('admin:bookme_calendar_changelist'), self.calendar.pk,
+            self.calendar.name)
+
+    admin_calendar.admin_order_field = 'calendar'
+    admin_calendar.allow_tags = True
+    admin_calendar.short_description = _('calendar')
 
 
 @python_2_unicode_compatible
