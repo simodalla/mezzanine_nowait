@@ -7,7 +7,7 @@ from django.conf.urls import patterns, url
 #                     CalendarGoogleConnectFormView, AdminHomeView)
 
 urlpatterns = patterns(
-    'mezzanine_nowait.views',
+    'nowait.views',
     url(r'bookingtype/(?P<slug>[-_\w]+)/$', 'bookingtype_detail',
         name='bookingtype_detail'),
 )

@@ -4,14 +4,14 @@
 import os
 import sys
 
-import mezzanine_nowait
+import nowait
 
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-version = mezzanine_nowait.__version__
+version = nowait.__version__
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -33,7 +33,7 @@ offices""",
     author_email='simodalla@gmail.com',
     url='https://github.com/simodalla/mezzanine_nowait',
     packages=[
-        'mezzanine_nowait',
+        'nowait',
     ],
     include_package_data=True,
     install_requires=[

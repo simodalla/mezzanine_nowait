@@ -24,16 +24,16 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 mezzanine_nowait tests
+	flake8 nowait tests
 
 test:
-	python project_template/manage.py test mezzanine_nowait
+	python project_template/manage.py test nowait
 
 test-all:
 	tox
 
 coverage-console:
-	coverage run --source mezzanine_nowait --omit=mezzanine_nowait/migrations/*,mezzanine_nowait/tests/factories.py project_template/manage.py test mezzanine_nowait
+	coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
 	coverage report -m
 
 coverage:

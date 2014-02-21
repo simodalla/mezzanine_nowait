@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 import datetime
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.timezone import (timedelta, make_aware, get_current_timezone,
                                    now)
@@ -258,8 +259,11 @@ class SlotTimeModelTest(TestCase):
         end = start + timedelta(minutes=30)
         slottime = SlotTime.objects.create(booking_type=bookingtype,
                                            start=start, end=end)
-        self.assertEqual(slottime.admin_calendar(),
-                         '<a href="{}"')
+        self.assertEqual(
+            slottime.admin_calendar(),
+            '<a href="{url}?id={calendar.pk}>{calendar.name}"'.format(
+                url=reverse('admin:nowait_calendar_changelist'),
+                calendar=bookingtype.calendar))
 
 
 

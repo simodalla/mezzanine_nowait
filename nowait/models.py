@@ -88,7 +88,7 @@ class BookingType(Displayable):
         return '%s %s' % (self._meta.verbose_name, self.title)
 
     def get_absolute_url(self):
-        return reverse('mezzanine_nowait:bookingtype_detail',
+        return reverse('nowait:bookingtype_detail',
                        kwargs={'slug': self.slug})
 
 

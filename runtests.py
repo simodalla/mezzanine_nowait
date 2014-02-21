@@ -11,12 +11,12 @@ try:
                 "ENGINE": "django.db.backends.sqlite3",
             }
         },
-        ROOT_URLCONF="mezzanine_nowait.urls",
+        ROOT_URLCONF="nowait.urls",
         INSTALLED_APPS=[
             "django.contrib.auth",
             "django.contrib.contenttypes",
             "django.contrib.sites",
-            "mezzanine_nowait",
+            "nowait",
         ],
         SITE_ID=1,
         NOSE_ARGS=['-s'],

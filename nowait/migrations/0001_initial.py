@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
         pass
 
     models = {
-        
+
     }
 
-    complete_apps = ['mezzanine_nowait']
+    complete_apps = ['nowait']
