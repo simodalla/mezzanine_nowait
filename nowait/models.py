@@ -230,14 +230,6 @@ class SlotTime(TimeStampedModel):
             force_insert=force_insert, force_update=force_update, using=using,
             update_fields=update_fields)
 
-    def admin_calendar(self):
-        return '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
-            url=reverse('admin:nowait_calendar_changelist'),
-            calendar=self.booking_type.calendar)
-
-    admin_calendar.allow_tags = True
-    admin_calendar.short_description = _('calendar')
-
 
 @python_2_unicode_compatible
 class Booking(TimeStampedModel):
