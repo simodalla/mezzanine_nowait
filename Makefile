@@ -33,11 +33,10 @@ test-all:
 	tox
 
 coverage-console:
-	coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
+	coverage run --source nowait --omit=nowait/migrations/*,*/tests/factories.py  project_template/manage.py test nowait
 	coverage report -m
 
-coverage:
-	coverage-console
+coverage: coverage-console
 	coverage html
 	open htmlcov/index.html
 
