@@ -1,6 +1,0 @@
-django>=1.5.1
-mezzanine>=3.0.9
-pillow
-wheel==0.22.0
-django_model_utils=2.0.1
-# Additional requirements go here
