@@ -101,7 +101,7 @@ class SlotTimesGenerationModelTest(TestCase):
         self.booking_type_30.dailyslottimepattern_set.all().delete()
         self.assertRaisesMessage(
             ValueError,
-            "{} has no related DailySlotTimePattern objects".format(
+            "{0} has no related DailySlotTimePattern objects".format(
                 self.booking_type_30.title),
             self.st_generation.create_slot_times)
 
@@ -220,7 +220,7 @@ class SlotTimeModelTest(TestCase):
             end_time=self.start_date + timedelta(
                 minutes=self.booking_type_30.slot_length*self.n_slot))
 
-    def test_st_method(self):
+    def test_str_method(self):
         bookingtype = BookingType.objects.create(title='bookingtype xxx')
         start = now()
         end = start + timedelta(minutes=30)
@@ -261,10 +261,9 @@ class SlotTimeModelTest(TestCase):
                                            start=start, end=end)
         self.assertEqual(
             slottime.admin_calendar(),
-            '<a href="{url}?id={calendar.pk}>{calendar.name}"'.format(
+            '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
                 url=reverse('admin:nowait_calendar_changelist'),
                 calendar=bookingtype.calendar))
-
 
 
 class SlotTimeManagersTest(TestCase):
@@ -286,8 +285,8 @@ class SlotTimeManagersTest(TestCase):
             DailySlotTimePattern.objects.create(
                 booking_type=btf,
                 day=self.start_date.weekday() + count,
-                start_time='{}:{}'.format(start.hour, start.minute),
-                end_time='{}:{}'.format(end.hour, end.minute), )
+                start_time='{0}:{1}'.format(start.hour, start.minute),
+                end_time='{0}:{1}'.format(end.hour, end.minute), )
             st_generation = SlotTimesGeneration.objects.create(
                 booking_type=btf,
                 start_date=self.start_date - timedelta(days=1),

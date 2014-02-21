@@ -133,8 +133,8 @@ class SlotTimesGeneration(TimeStampedModel):
             raise e
 
         if self.booking_type.dailyslottimepattern_set.count() == 0:
-            raise ValueError("{} has no related DailySlotTimePattern "
-                             "objects".format(self.booking_type.title))
+            raise ValueError("{title} has no related DailySlotTimePattern "
+                             "objects".format(title=self.booking_type.title))
 
         count = 0
         for pattern in self.booking_type.dailyslottimepattern_set.all():
@@ -219,8 +219,9 @@ class SlotTime(TimeStampedModel):
     def clean(self):
         if SlotTime.objects.exclude(pk=self.pk).filter(
                 start__lte=self.start, end__gt=self.start).count() > 0:
-            raise ValidationError("{} n.[{}] overlaps with other.".format(
-                self.__class__.__name__, self.pk, self))
+            raise ValidationError(
+                "Tring to insert an %s object that"
+                " overlaps with other." % self._meta.verbose_name.capitalize())
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -230,11 +231,10 @@ class SlotTime(TimeStampedModel):
             update_fields=update_fields)
 
     def admin_calendar(self):
-        return '<a href="{}?id={}">{}</a>'.format(
-            reverse('admin:bookme_calendar_changelist'), self.calendar.pk,
-            self.calendar.name)
+        return '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
+            url=reverse('admin:nowait_calendar_changelist'),
+            calendar=self.booking_type.calendar)
 
-    admin_calendar.admin_order_field = 'calendar'
     admin_calendar.allow_tags = True
     admin_calendar.short_description = _('calendar')
 
