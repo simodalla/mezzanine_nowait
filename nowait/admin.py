@@ -26,8 +26,9 @@ class MixinCheckOperatorAdminView(object):
             request,
             _("You do not have permission to modify this object type."),
             level=messages.ERROR)
-        return redirect('admin:bookme_{}_changelist'.format(
-            self.model.__name__.lower()))
+        return redirect(
+            'admin:{model._meta.app_label}_{model._meta.model_name}'
+            '_changelist'.format(model=self.model))
 
 
 class BookingTypeInline(admin.TabularInline):
@@ -49,39 +50,42 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     list_per_page = 20
     prepopulated_fields = {'slug': ('name',)}
 
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        try:
-            from mezzanine_bookme.models import BookingTypePage
-            if not change:
-                page, created = BookingTypePage.make_page_from_booking_type(obj)
-                if created:
-                    self.message_user(
-                        request,
-                        _('Page of title "%(title)s" with slug "%(slug)s" is'
-                          ' succesfully created.') % {'title': page.title,
-                                                      'slug': page.slug})
-        except ImportError:
-            if 'mezzanine' in [app.slipt('.')[0] for app
-                               in settings.INSTALLED_APPS]:
-                self.message_user(
-                    request,
-                    _('App {} not in INSTALLED_APPS setting'.format(
-                        'mezzanine_bookme')),
-                    level=messages.ERROR)
+    # def save_model(self, request, obj, form, change):
+    #     obj.save()
+    #     try:
+    #         from mezzanine_bookme.models import BookingTypePage
+    #         if not change:
+    #             page, created = BookingTypePage.make_page_from_booking_type(obj)
+    #             if created:
+    #                 self.message_user(
+    #                     request,
+    #                     _('Page of title "%(title)s" with slug "%(slug)s" is'
+    #                       ' succesfully created.') % {'title': page.title,
+    #                                                   'slug': page.slug})
+    #     except ImportError:
+    #         if 'mezzanine' in [app.slipt('.')[0] for app
+    #                            in settings.INSTALLED_APPS]:
+    #             self.message_user(
+    #                 request,
+    #                 _('App {} not in INSTALLED_APPS setting'.format(
+    #                     'mezzanine_bookme')),
+    #                 level=messages.ERROR)
 
 
 class CalendarAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
-    list_display = ['name', 'owner', 'gid', 'get_booking_types']
+    list_display = ['name', 'owner', 'gid', 'booking_type_links']
     list_per_page = 20
 
-    def get_booking_types(self, obj):
-        return u'<br >'.join(
-            [u'<a href="{}?id={}">{}</a>'.format(
-                reverse('admin:bookme_bookingtype_changelist'), bt.pk, bt.name)
-             for bt in obj.bookingtype_set.all()])
-    get_booking_types.short_description = _('booking types')
-    get_booking_types.allow_tags = True
+    def booking_type_links(self, obj):
+        link_tpl = '<a href="{url}?id={bookinktype.pk}">{bookinktype.title}</a>'
+        return '<br >'.join([
+            link_tpl.format(
+                url=reverse('admin:{model._meta.app_label}_{model._meta.'
+                            'model_name}_changelist'.format(model=bt)),
+                bookinktype=bt)
+            for bt in obj.bookingtype_set.order_by('title')])
+    booking_type_links.short_description = _('booking types')
+    booking_type_links.allow_tags = True
 
 
 class SlotTimesGenerationAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
@@ -91,17 +95,18 @@ class SlotTimesGenerationAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     list_per_page = 20
 
     def save_model(self, request, obj, form, change):
-        obj.user = obj.save()
+        obj.user = request.user
         obj.save()
 
     def slottimes_lt(self, obj):
         slottimes_count = obj.slottime_set.count()
-        if slottimes_count:
-            url = reverse('admin:{}_{}_changelist'.format(
-                SlotTime._meta.app_label,
-                SlotTime._meta.module_name))
-            return '<a href="{}?generation={}">{} {}</a>'.format(
-                url, obj.pk, slottimes_count, _('slottimes generated'))
+        if slottimes_count >= 1:
+            url = reverse('admin:{slottime._meta.app_label}_'
+                          '{slottime._meta.model_name}'
+                          '_changelist'.format(slottime=SlotTime))
+            return '<a href="{0}?generation={1}">{2}</a>'.format(
+                url, obj.pk, slottimes_count)
+        return str(slottimes_count)
     slottimes_lt.short_description = _('slottimes generated')
     slottimes_lt.allow_tags = True
 
@@ -114,11 +119,18 @@ class SlotTimesGenerationAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
 class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     date_hierarchy = 'start'
-    list_display = ['pk', 'admin_calendar', 'booking_type', 'start', 'end',
+    list_display = ['pk', 'calendar_lt', 'booking_type', 'start', 'end',
                     'status', 'generation']
     list_filter = ['calendar', 'booking_type', 'status']
     list_per_page = 20
     ordering = ['booking_type', 'start', 'end']
+
+    def calendar_link(self, obj):
+        return '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
+            url=reverse('admin:nowait_calendar_changelist'),
+            calendar=obj.booking_type.calendar)
+    calendar_link.allow_tags = True
+    calendar_link.short_description = _('calendar')
 
 
 class BookingAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
