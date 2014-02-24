@@ -1,23 +1,23 @@
 # -*- coding: iso-8859-1 -*-
 
 import factory
-
 from django.contrib.auth.models import User, Permission, Group
-
+from mezzanine.pages.models import RichTextPage
 from .. import models
-from ..core import BOOKME_GROUP_ADMINS, BOOKME_GROUP_OPERATORS
+from ..defaults import (NOWAIT_ROOT_SLUG, NOWAIT_GROUP_ADMINS,
+                        NOWAIT_GROUP_OPERATORS)
 
 DOMAIN = 'comune.zolapredosa.bo.it'
 
 
-class BookmeOperatorsGroupFactory(factory.DjangoModelFactory):
+class NowaitGOperatorsF(factory.DjangoModelFactory):
     FACTORY_FOR = Group
 
-    name = BOOKME_GROUP_OPERATORS
+    name = NOWAIT_GROUP_OPERATORS
 
     @classmethod
     def _prepare(cls, create, **kwargs):
-        group = super(BookmeOperatorsGroupFactory, cls)._prepare(create,
+        group = super(NowaitGOperatorsF, cls)._prepare(create,
                                                                  **kwargs)
         group.permissions.add(
             *Permission.objects.filter(content_type__app_label='bookme',
@@ -25,20 +25,20 @@ class BookmeOperatorsGroupFactory(factory.DjangoModelFactory):
         return group
 
 
-class BookmeAdminsGroupFactory(factory.DjangoModelFactory):
+class NowaitGAdminsF(factory.DjangoModelFactory):
     FACTORY_FOR = Group
 
-    name = BOOKME_GROUP_OPERATORS
+    name = NOWAIT_GROUP_ADMINS
 
     @classmethod
     def _prepare(cls, create, **kwargs):
-        group = super(BookmeAdminsGroupFactory, cls)._prepare(create, **kwargs)
+        group = super(NowaitGAdminsF, cls)._prepare(create, **kwargs)
         group.permissions.add(
             *Permission.objects.filter(content_type__app_label='bookme'))
         return group
 
 
-class UserFactory(factory.DjangoModelFactory):
+class UserF(factory.DjangoModelFactory):
     FACTORY_FOR = User
 
     username = factory.Sequence(lambda n: 'user_%s' % n)
@@ -51,7 +51,7 @@ class UserFactory(factory.DjangoModelFactory):
     @classmethod
     def _prepare(cls, create, **kwargs):
         password = kwargs.pop('password', None)
-        user = super(UserFactory, cls)._prepare(create, **kwargs)
+        user = super(UserF, cls)._prepare(create, **kwargs)
         if password:
             user.set_password(password)
             if create:
@@ -67,7 +67,7 @@ class UserFactory(factory.DjangoModelFactory):
                 self.groups.add(group)
 
 
-class AdminFactory(UserFactory):
+class AdminF(UserF):
     FACTORY_FOR = User
 
     username = 'admin'
@@ -88,6 +88,18 @@ class CalendarPatternsFactory(factory.DjangoModelFactory):
     name = 'demo calendar with pattern'
     description = factory.LazyAttribute(
         lambda obj: 'description of {0}'.format(obj.name))
+
+
+class RichTextPageF(factory.DjangoModelFactory):
+    FACTORY_FOR = RichTextPage
+
+    title = factory.Sequence(lambda n: 'RichTextPage n. %s' % n)
+    content = factory.LazyAttribute(lambda a: '<p>Content of %s</p>' % a.title)
+
+
+class RootNowaitPageF(RichTextPageF):
+    title = 'Root Page of NoWait'
+    slug = NOWAIT_ROOT_SLUG
 
 
 class BookingTypeF(factory.DjangoModelFactory):

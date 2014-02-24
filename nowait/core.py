@@ -5,12 +5,6 @@ import collections
 import datetime
 import inspect
 
-from django.utils.translation import ugettext_lazy as _
-
-BOOKME_APP_NAME = _('Bookme')
-BOOKME_GROUP_OPERATORS = 'bookme_operators'
-BOOKME_GROUP_ADMINS = 'bookme_admins'
-
 
 def get_range_days(start_date, end_date):
 

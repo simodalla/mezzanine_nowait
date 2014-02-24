@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.shortcuts import redirect
 
-from .core import BOOKME_GROUP_ADMINS
+from .defaults import NOWAIT_GROUP_ADMINS
 from .models import (BookingType, Calendar, DailySlotTimePattern, SlotTime,
                      SlotTimesGeneration, Booking)
 
@@ -17,7 +17,7 @@ class MixinCheckOperatorAdminView(object):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         user = request.user
         if user.is_superuser or (
-                BOOKME_GROUP_ADMINS in user.groups.values_list('name',
+                NOWAIT_GROUP_ADMINS in user.groups.values_list('name',
                                                                flat=True)):
             return super(MixinCheckOperatorAdminView, self).change_view(
                 request, object_id, form_url=form_url,

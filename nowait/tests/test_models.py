@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 import datetime
-from unittest import skipIf
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -10,7 +9,7 @@ from django.utils.timezone import (timedelta, make_aware, get_current_timezone,
 from ..models import (DAYS, Calendar, Email, BookingType, DailySlotTimePattern,
                       SlotTimesGeneration, SlotTime, Booking)
 from .factories import (BookingType30F, BookingType45F, BookingTypeF,
-                        UserFactory, AdminFactory)
+                        UserF, AdminF)
 
 
 class CalendarModelTest(TestCase):
@@ -43,7 +42,7 @@ class BookingTypeModelTest(TestCase):
         obj = BookingType.objects.create(title=title)
         self.assertEqual(obj.slug, slug)
         self.assertEqual(obj.get_absolute_url(),
-                         '/nowait/bookingtype/%s/' % slug)
+                         '/nowait/%s/' % slug)
 
 
 class DailySlotTimePatternModelTest(TestCase):
@@ -67,7 +66,7 @@ class SlotTimesGenerationModelTest(TestCase):
     def setUp(self):
         self.booking_type_30 = BookingType30F()
         self.booking_type_45 = BookingType45F()
-        self.user = UserFactory()
+        self.user = UserF()
         # 6 may of 2013 is a monday
         self.start_date = make_aware(datetime.datetime(2013, 5, 6, 10, 0),
                                      get_current_timezone())
@@ -267,12 +266,12 @@ class SlotTimeModelTest(TestCase):
     #             calendar=bookingtype.calendar))
 
 
-@skipIf(datetime.date.today().isoweekday() == 7, "On Sunday this test fail")
+# @skipIf(datetime.date.today().isoweekday() == 7, "On Sunday this test fail")
 class SlotTimeManagersTest(TestCase):
     def setUp(self):
         self.booking_types = {}
-        self.user = UserFactory()
-        self.admin = AdminFactory()
+        self.user = UserF()
+        self.admin = AdminF()
         self.start_date = now()
         self.n_slot = 2
         self.start_hour = 9

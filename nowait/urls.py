@@ -2,13 +2,13 @@
 from __future__ import unicode_literals, absolute_import
 from django.conf.urls import patterns, url
 
-from .views import BookingTypeDetailView
+from .views import BookingTypeDetailView, SlottimeSelectView
 
 urlpatterns = patterns(
     'nowait.views',
-    url(r'bookingtype/(?P<slug>[-_\w]+)/$', BookingTypeDetailView.as_view(),
-    # url(r'bookingtype/(?P<slug>[-_\w]+)/$', 'aaa',
+    # url(r'^$', BookingTypeListView.as_view(), name='home'),
+    url(r'^(?P<slug>[-_\w]+)/$', BookingTypeDetailView.as_view(),
         name='bookingtype_detail'),
-    # url(r'^(?P<slug>[-_\w]+)/slottime/select/$', 'None',
-    #     name='slottime_select'),
+    url(r'^(?P<slug>[-_\w]+)/slottime/select/$', SlottimeSelectView.as_view(),
+        name='slottime_select'),
 )

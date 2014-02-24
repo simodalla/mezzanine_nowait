@@ -1,0 +1,60 @@
+{% extends 'pages/page.html' %}
+{% load l10n i18n %}
+
+{% block extra_css %}
+    <style>
+    .tab-content {
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 20px;
+    }
+    .nav-tabs {
+        margin-bottom: 0;
+    }
+    </style>
+{% endblock extra_css %}
+
+{% block breadcrumb_menu %}
+    {{ block.super }}
+    <li id="breadcrumb-menu-bookme-conferma-prenotazione" class="active">
+        {{ title }}
+    </li>
+{% endblock %}
+
+{% block main %}
+    {{ block.super }}
+    <ul class="nav nav-tabs">
+        {% for month, year, slottimes_for_month in slottimes %}
+            <li{% if forloop.first %} class="active"{% endif %}>
+                <a href="#{% trans month %}" data-toggle="tab">
+                    {% trans month as month_local %}{{ month_local|capfirst }}&nbsp;&nbsp;{{ year }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for month, year, slottimes_for_month in slottimes %}
+            <div class="tab-pane{% if forloop.first %} active{% endif %}"
+                 id="{% trans month %}">
+                <ul class="thumbnails">
+                {% for slottime in slottimes_for_month %}
+                    <li class="span2 middle">
+                        {% comment %}
+                        <div class="thumbnail text-center">
+                            <a href="{% url 'bookme:booking_add' slottime.pk %}"
+                               id="btn_book_slottime_{{ slottime.pk }}"
+                               class="btn btn-primary"
+                               title="{% trans "Select slot time" %}&nbsp;{% blocktrans with day=slottime.start|date:"l j" from=slottime.start|date:"H:i" to=slottime.end|date:"H:i" %}{{ day }} from {{ from }} to {{ to }}{% endblocktrans %}">
+                                {% blocktrans with day=slottime.start|date:"l j" from=slottime.start|date:"H:i" to=slottime.end|date:"H:i" %}{{ day }} from {{ from }} to {{ to }}{% endblocktrans %}
+                            </a>
+                        </div>
+                        {% endcomment %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}>
