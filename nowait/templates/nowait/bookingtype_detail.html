@@ -1,0 +1,17 @@
+{% extends 'pages/page.html' %}
+{% load l10n i18n mezzanine_tags %}
+
+{% block main %}
+    {{ block.super }}
+
+    {% comment %}
+    <div class="hero-unit" style="padding: 30px;">
+        <h1>{{ object.name }}</h1>
+        <br>
+        <a href="{% url 'nowait:slottime_select' object.slug %}"
+              id="btn_slottime_select_for_{{ object.pk }}"
+              class="btn btn-primary btn-large">Fissa il tuo appuntamento &raquo;</a>
+    </div>
+    {{ object.bookingtypepage.info|richtext_filters|safe }}
+    {% endcomment %}
+{% endblock %}

@@ -2,3 +2,4 @@ django>=1.5.1
 mezzanine>=3.0.9
 pillow
 django_model_utils>=2.0.1
+django_braces>=1.3.1
