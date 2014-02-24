@@ -23,10 +23,3 @@ class PageContextTitleMixin(object):
         context = super(PageContextTitleMixin, self).get_context_data(**kwargs)
         context.update({"title": self.get_page_title()})
         return context
-
-
-def setup_cbview(view, request, *args, **kwargs):
-    view.request = request
-    view.args = args
-    view.kwargs = kwargs
-
