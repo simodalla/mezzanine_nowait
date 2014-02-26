@@ -1,12 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 from django.shortcuts import redirect
 
 from .defaults import NOWAIT_GROUP_ADMINS
@@ -44,10 +43,9 @@ class DailySlotTimePatternInline(admin.TabularInline):
 
 class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     inlines = [DailySlotTimePatternInline]
-    list_display = ['name', 'calendar', 'slot_length', 'description', 'notes',
-                    'admin_cms_page']
+    list_display = ['title', 'calendar', 'slot_length', 'description', 'notes',]
+                    # 'admin_cms_page']
     list_per_page = 20
-    prepopulated_fields = {'slug': ('name',)}
 
     # def save_model(self, request, obj, form, change):
     #     obj.save()
@@ -115,9 +113,9 @@ class SlotTimesGenerationAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
 class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     date_hierarchy = 'start'
-    list_display = ['pk', 'calendar_lt', 'booking_type', 'start', 'end',
+    list_display = ['pk', 'calendar_link', 'booking_type', 'start', 'end',
                     'status', 'generation']
-    list_filter = ['calendar', 'booking_type', 'status']
+    list_filter = ['booking_type', 'status']
     list_per_page = 20
     ordering = ['booking_type', 'start', 'end']
 
@@ -131,11 +129,29 @@ class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
 
 class BookingAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
-    list_display = ['pk', 'user', 'admin_day', 'admin_start', 'admin_end',
-                    'notes', 'telephone']
+    list_display = ['pk', 'user', 'formatted_day', 'formatted_start',
+                    'formatted_end', 'notes', 'telephone']
     list_per_page = 20
     search_fields = ['id', 'user__username', 'user__last_name',
                      'user__first_name', 'slottime__booking_type__name']
+
+    def formatted_day(self):
+        result = u'{} {} {} {}'.format(
+            ugettext(self.slottime.start.strftime('%A')).capitalize(),
+            self.slottime.start.day,
+            ugettext(self.slottime.start.strftime('%B')).capitalize(),
+            self.slottime.start.year)
+        return result
+    formatted_day.admin_order_field = 'slottime__start'
+    formatted_day.short_description = _('day')
+
+    def formatted_start(self):
+        return self.slottime.start.strftime('%H:%M')
+    formatted_start.short_description = _('Start Time')
+
+    def formatted_end(self):
+        return self.slottime.end.strftime('%H:%M')
+    formatted_end.short_description = _('End Time')
 
 
 admin.site.register(Booking, BookingAdmin)
