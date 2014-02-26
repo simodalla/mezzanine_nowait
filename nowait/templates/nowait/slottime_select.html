@@ -40,16 +40,14 @@
                 <ul class="thumbnails">
                 {% for slottime in slottimes_for_month %}
                     <li class="span2 middle">
-                        {% comment %}
                         <div class="thumbnail text-center">
-                            <a href="{% url 'bookme:booking_add' slottime.pk %}"
+                            <a href="{% url 'nowait:booking_add' slottime.pk %}"
                                id="btn_book_slottime_{{ slottime.pk }}"
                                class="btn btn-primary"
                                title="{% trans "Select slot time" %}&nbsp;{% blocktrans with day=slottime.start|date:"l j" from=slottime.start|date:"H:i" to=slottime.end|date:"H:i" %}{{ day }} from {{ from }} to {{ to }}{% endblocktrans %}">
                                 {% blocktrans with day=slottime.start|date:"l j" from=slottime.start|date:"H:i" to=slottime.end|date:"H:i" %}{{ day }} from {{ from }} to {{ to }}{% endblocktrans %}
                             </a>
                         </div>
-                        {% endcomment %}
                     </li>
                 {% endfor %}
                 </ul>

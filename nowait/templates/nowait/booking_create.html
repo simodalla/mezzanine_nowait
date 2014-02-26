@@ -1,0 +1,26 @@
+{% extends 'base_site.html' %}
+{% load pages_tags crispy_forms_tags i18n l10n %}
+
+{% block breadcrumb_menu %}
+    {{ block.super }}
+    <li id="breadcrumb-menu-bookme-{{ slottime.booking_type.slug }}">
+        <a href="{% url 'nowait' slottime.booking_type.slug %}">
+            {{ slottime.booking_type.name }}
+        </a>
+    <span class="divider">/</span>
+    </li>
+    <li id="breadcrumb-menu-bookme-{{ slottime.booking_type.slug }}-">
+        <a href="{% url 'nowait' slottime.booking_type.slug %}">
+            Seleziona giorno fascia oraria
+        </a>
+    <span class="divider">/</span>
+    </li>
+    <li id="breadcrumb-menu-bookme-conferma-prenotazione" class="active">
+        {{ title }}
+    </li>
+{% endblock %}
+
+{% block main %}
+    {{ block.super }}
+    {% crispy form %}
+{% endblock %}

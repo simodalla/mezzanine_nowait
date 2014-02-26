@@ -249,6 +249,7 @@ INSTALLED_APPS = (
     # "mezzanine.galleries",
     #"mezzanine.accounts",
     #"mezzanine.mobile",
+    "django-crispy-forms",
     "nowait",
 )
 
