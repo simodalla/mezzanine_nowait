@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from datetime import datetime
 
+from django.contrib import messages
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import transaction
 from django.shortcuts import redirect
@@ -14,9 +15,11 @@ from django.views.generic.edit import FormView
 from mezzanine.conf import settings
 
 from braces.views import LoginRequiredMixin, GroupRequiredMixin
+from mezzanine.utils.email import send_mail_template
 
 from .utils import PageContextTitleMixin
 from .models import BookingType, SlotTime
+from .forms import BookingCreateForm
 
 
 class BookingTypeDetailView(PageContextTitleMixin, DetailView):
@@ -69,7 +72,8 @@ class SlottimeSelectView(PageContextTitleMixin, LoginRequiredMixin,
 class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
     form_class = BookingCreateForm
     page_title = 'Conferma Prenotazione'
-    template_name = 'bookme/booking_create.html'
+    template_name = 'nowait/booking_create.html'
+    slottime = None
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -88,7 +92,7 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         return {'slottime': self.slottime.pk}
 
     def get_success_url(self):
-        return reverse('bookme:booking_list')
+        return reverse('nowait:booking_list')
 
     @transaction.commit_manually
     def form_valid(self, form):
