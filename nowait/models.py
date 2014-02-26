@@ -76,7 +76,8 @@ class BookingType(Displayable):
         _('Enable email notifications'), default=True)
     notifications_emails = models.ManyToManyField(
         Email, blank=True, null=True, verbose_name=_('Emails to notify'))
-    raw_location = models.CharField(_('Location (raw)'), max_length=500)
+    raw_location = models.CharField(_('Location (raw)'), max_length=500,
+                                    blank=True)
 
     class Meta:
         ordering = ['title']
