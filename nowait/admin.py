@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -26,9 +27,7 @@ class MixinCheckOperatorAdminView(object):
             request,
             _("You do not have permission to modify this object type."),
             level=messages.ERROR)
-        return redirect(
-            'admin:{model._meta.app_label}_{model._meta.model_name}'
-            '_changelist'.format(model=self.model))
+        return redirect(admin_urlname(self.model._meta, 'changelist'))
 
 
 class BookingTypeInline(admin.TabularInline):
@@ -80,8 +79,7 @@ class CalendarAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
         link_tpl = '<a href="{url}?id={bookinktype.pk}">{bookinktype.title}</a>'
         return '<br >'.join([
             link_tpl.format(
-                url=reverse('admin:{model._meta.app_label}_{model._meta.'
-                            'model_name}_changelist'.format(model=bt)),
+                url=reverse(admin_urlname(bt._meta, 'changelist')),
                 bookinktype=bt)
             for bt in obj.bookingtype_set.order_by('title')])
     booking_type_links.short_description = _('booking types')
@@ -101,9 +99,7 @@ class SlotTimesGenerationAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     def slottimes_lt(self, obj):
         slottimes_count = obj.slottime_set.count()
         if slottimes_count >= 1:
-            url = reverse('admin:{slottime._meta.app_label}_'
-                          '{slottime._meta.model_name}'
-                          '_changelist'.format(slottime=SlotTime))
+            url = reverse(admin_urlname(SlotTime._meta, 'changelist'))
             return '<a href="{0}?generation={1}">{2}</a>'.format(
                 url, obj.pk, slottimes_count)
         return str(slottimes_count)
@@ -127,7 +123,8 @@ class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
     def calendar_link(self, obj):
         return '<a href="{url}?id={calendar.pk}">{calendar.name}</a>'.format(
-            url=reverse('admin:nowait_calendar_changelist'),
+            url=reverse(admin_urlname(obj.booking_type.calendar._meta,
+                                      'changelist')),
             calendar=obj.booking_type.calendar)
     calendar_link.allow_tags = True
     calendar_link.short_description = _('calendar')
