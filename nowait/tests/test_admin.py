@@ -23,8 +23,7 @@ class CalendarAdminTest(TestCase):
         calendaradmin = CalendarAdmin(Calendar, AdminSite)
         result = '<br >'.join(
             ['<a href="{0}?id={1}">{2}</a>'.format(reverse(
-                'admin:{bt._meta.app_label}_{bt._meta.model_name}_'
-                'changelist'.format(bt=bt)), bt.pk, bt.title)
+                'admin:nowait_bookingtype_changelist'), bt.pk, bt.title)
              for bt in calendar.bookingtype_set.order_by('title')])
         self.assertEqual(calendaradmin.booking_type_links(calendar), result)
 
