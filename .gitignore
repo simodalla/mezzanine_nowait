@@ -36,6 +36,10 @@ htmlcov
 .pydevproject
 .idea
 
+# Databases
+*.db
+*.sqlite
+
 # Complexity
 output/*.html
 output/*/index.html
