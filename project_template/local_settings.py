@@ -22,4 +22,10 @@ DATABASES = {
     }
 }
 
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+from django import get_version
+if int(get_version().split('.')[1]) <= 5:
+    TEST_RUNNER = 'discover_runner.DiscoverRunner'
+    TEST_DISCOVER_PATTERN = "test_*.py"
+else:
+    TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
