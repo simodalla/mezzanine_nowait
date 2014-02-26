@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 
 from mezzanine.conf import settings
+from mezzanine.pages.models import Page
 from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 
@@ -30,16 +31,33 @@ class PageContextTitleMixin(object):
         return context
 
 
-def root_app_page_get_or_create(model_page, app_label, **defaults):
+def get_app_setting(app_label, setting):
     settings.use_editable()
-    setting_root_slug_key = '{0}_ROOT_SLUG'.format(app_label.upper())
+    setting_root_slug_key = '{0}_{1}'.format(app_label.upper(), setting.upper())
     slug = getattr(settings, setting_root_slug_key, None)
     if not slug:
         raise ImproperlyConfigured("The {0} setting must not be empty.".format(
             setting_root_slug_key))
+    return slug
+
+
+def get_or_create_root_app_page(model_page, app_label, **defaults):
+    if 'slug' in defaults:
+        del defaults['slug']
+    slug = get_app_setting(app_label, 'ROOT_SLUG')
     if slug != '/':
         slug = slug.lstrip('/').rstrip('/')
-    root_page, create = model_page.objects.get_or_create(
+    root_page, created = model_page.objects.get_or_create(
         slug=slug, defaults=defaults)
-    return root_page, create
+    return root_page, created
+
+
+def get_root_app_page(app_label):
+    slug = get_app_setting(app_label, 'ROOT_SLUG')
+    try:
+        return Page.objects.get(slug=slug)
+    except Page.DoesNotExist:
+        raise ImproperlyConfigured('No page with slug "{0}" was found'.format(
+            slug))
+
 

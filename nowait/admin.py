@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib import messages
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.shortcuts import redirect
@@ -43,30 +44,19 @@ class DailySlotTimePatternInline(admin.TabularInline):
 
 class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     inlines = [DailySlotTimePatternInline]
-    list_display = ['title', 'calendar', 'slot_length', 'description', 'notes',]
-                    # 'admin_cms_page']
+    list_display = ['title', 'calendar', 'slot_length', 'description', 'notes',
+                    'link']
     list_per_page = 20
 
-    # def save_model(self, request, obj, form, change):
-    #     obj.save()
-    #     try:
-    #         from mezzanine_bookme.models import BookingTypePage
-    #         if not change:
-    #             page, created = BookingTypePage.make_page_from_booking_type(obj)
-    #             if created:
-    #                 self.message_user(
-    #                     request,
-    #                     _('Page of title "%(title)s" with slug "%(slug)s" is'
-    #                       ' succesfully created.') % {'title': page.title,
-    #                                                   'slug': page.slug})
-    #     except ImportError:
-    #         if 'mezzanine' in [app.slipt('.')[0] for app
-    #                            in settings.INSTALLED_APPS]:
-    #             self.message_user(
-    #                 request,
-    #                 _('App {} not in INSTALLED_APPS setting'.format(
-    #                     'mezzanine_bookme')),
-    #                 level=messages.ERROR)
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        try:
+            link, _ = obj.get_or_create_link()
+            msg = 'Link created'
+            self.message_user(request, msg)
+        except ImproperlyConfigured as e:
+            msg = '{exception.message}'.format(excption=e)
+            self.message_user(request, msg, level=messages.ERROR)
 
 
 class CalendarAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):

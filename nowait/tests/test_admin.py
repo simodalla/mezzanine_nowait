@@ -44,6 +44,10 @@ class SlotTimeAdminTest(TestCase):
                 calendar=bookingtype.calendar))
 
 
+class BookingTypeAdminTest(TestCase):
+    pass
+
+
 class SlotTimesGenerationAdminTest(TestCase):
 
     def test_slottimes_lt_callble_without_related_slottime(self):

@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
+
 import datetime
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
+
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.test import TestCase
 from django.utils.timezone import (timedelta, make_aware, get_current_timezone,
                                    now)
+
+from mezzanine.pages.models import Link, RichTextPage
+
 from ..models import (DAYS, Calendar, Email, BookingType, DailySlotTimePattern,
                       SlotTimesGeneration, SlotTime, Booking)
 from .factories import (BookingType30F, BookingType45F, BookingTypeF,
                         UserF, AdminF)
+from ..utils import get_or_create_root_app_page
 
 
 class CalendarModelTest(TestCase):
@@ -30,19 +40,51 @@ class EmailModelTest(TestCase):
 
 class BookingTypeModelTest(TestCase):
 
+    def setUp(self):
+        self.title = 'bookingtype xxx'
+        self.slug = '-'.join(self.title.split(' '))
+
+
     def test_str(self):
-        title = 'booking xxx'
-        obj = BookingType.objects.create(title=title)
+        obj = BookingType.objects.create(title=self.title)
         self.assertEqual(obj.__str__(),
-                         '%s %s' % (obj._meta.verbose_name, title))
+                         '%s %s' % (obj._meta.verbose_name, self.title))
 
     def test_get_absolute_url(self):
-        title = 'bookingtype xxx'
-        slug = '-'.join(title.split(' '))
-        obj = BookingType.objects.create(title=title)
-        self.assertEqual(obj.slug, slug)
+        obj = BookingType.objects.create(title=self.title)
+        self.assertEqual(obj.slug, self.slug)
         self.assertEqual(obj.get_absolute_url(),
-                         '/nowait/%s/' % slug)
+                         '/nowait/%s/' % self.slug)
+
+    def test_get_or_create_link_raise_exception_if_no_root_page(self):
+        obj = BookingType.objects.create(title=self.title, slug=self.slug)
+        self.assertRaises(ImproperlyConfigured, obj.get_or_create_link)
+
+    def test_create_link_with_get_or_create_link_method(self):
+        obj = BookingType.objects.create(title=self.title, slug=self.slug)
+        get_or_create_root_app_page(RichTextPage, obj._meta.app_label)
+        link, created = obj.get_or_create_link()
+        self.assertTrue(isinstance(link, Link))
+        self.assertTrue(created)
+        self.assertEqual(link, obj.link)
+        self.assertEqual(link.slug, obj.get_absolute_url())
+        self.assertEqual(link.title, obj.title)
+
+    def test_get_or_create_link_delete_old_link(self):
+        root_page, created = get_or_create_root_app_page(RichTextPage, 'nowait')
+        old_wrong_link = Link.objects.create(slug='wrong-slug',
+                                             parent=root_page)
+        old_wrong_link.delete = Mock()
+        obj = BookingType.objects.create(title=self.title, slug=self.slug,
+                                         link=old_wrong_link)
+        self.assertTrue(obj.link, old_wrong_link)
+        link, created = obj.get_or_create_link()
+        self.assertTrue(isinstance(link, Link))
+        self.assertTrue(created)
+        self.assertEqual(link, obj.link)
+        self.assertEqual(link.slug, obj.get_absolute_url())
+        self.assertEqual(link.title, obj.title)
+        old_wrong_link.delete.assert_called_once_with()
 
 
 class DailySlotTimePatternModelTest(TestCase):

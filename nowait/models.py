@@ -3,22 +3,24 @@ from __future__ import unicode_literals, absolute_import
 
 import warnings
 
-from django.core.mail import send_mail
-
-from django.contrib.auth.models import User
 from django.conf import settings
-from django.core.exceptions import ValidationError, ImproperlyConfigured
+from django.core.exceptions import (ValidationError, ImproperlyConfigured,
+                                    ObjectDoesNotExist)
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils.timezone import (datetime, timedelta, make_aware,
                                    get_current_timezone, now)
+
 from mezzanine.core.fields import RichTextField
-from mezzanine.pages.models import Displayable
+from mezzanine.pages.models import Displayable, Link
+
 from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusField
+
 from .core import get_range_days, get_week_map_by_weekday
+from .utils import get_root_app_page
 
 try:
     #noinspection PyUnresolvedReferences
@@ -78,6 +80,7 @@ class BookingType(Displayable):
         Email, blank=True, null=True, verbose_name=_('Emails to notify'))
     raw_location = models.CharField(_('Location (raw)'), max_length=500,
                                     blank=True)
+    link = models.ForeignKey(Link, blank=True, null=True, editable=False)
 
     class Meta:
         ordering = ['title']
@@ -91,6 +94,23 @@ class BookingType(Displayable):
     def get_absolute_url(self):
         return reverse('nowait:bookingtype_detail',
                        kwargs={'slug': self.slug})
+
+    def get_or_create_link(self):
+        try:
+            root_page = get_root_app_page(self._meta.app_label)
+        except ImproperlyConfigured as e:
+            raise e
+        link, created = Link.objects.get_or_create(
+            slug=self.get_absolute_url(),
+            parent=root_page,
+            defaults={'title': self.title})
+        if self.link != link:
+            old_link = self.link
+            self.link = link
+            self.save()
+            if old_link:
+                old_link.delete()
+        return link, created
 
 
 @python_2_unicode_compatible
