@@ -239,18 +239,14 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "nowait",
     "mezzanine.boot",
     "mezzanine.conf",
     "mezzanine.core",
     "mezzanine.generic",
-    # "mezzanine.blog",
-    # "mezzanine.forms",
     "mezzanine.pages",
-    # "mezzanine.galleries",
     #"mezzanine.accounts",
-    #"mezzanine.mobile",
     "crispy_forms",
-    "nowait",
 )
 
 # List of processors used by RequestContext to populate the context.

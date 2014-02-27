@@ -11,6 +11,10 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.shortcuts import redirect
 
+# don't delete next two lines before DisplayableAdmin because
+# raise more error in testing
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from mezzanine.core.admin import DisplayableAdmin, TabularDynamicInlineAdmin
 
 from .defaults import NOWAIT_GROUP_ADMINS

@@ -44,7 +44,6 @@ class BookingTypeModelTest(TestCase):
         self.title = 'bookingtype xxx'
         self.slug = '-'.join(self.title.split(' '))
 
-
     def test_str(self):
         obj = BookingType.objects.create(title=self.title)
         self.assertEqual(obj.__str__(),
