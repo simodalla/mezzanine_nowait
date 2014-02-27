@@ -51,11 +51,14 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         try:
-            link, _ = obj.get_or_create_link()
-            msg = 'Link created'
-            self.message_user(request, msg)
+            link, created = obj.get_or_create_link()
+            if created:
+                msg = _('Link to "%(url)s" successfully created') % {
+                    'url': link.slug}
+                self.message_user(request, msg, level=messages.SUCCESS)
         except ImproperlyConfigured as e:
-            msg = '{exception.message}'.format(excption=e)
+            msg = 'Error on Link creation: {error_message}'.format(
+                error_message=str(e))
             self.message_user(request, msg, level=messages.ERROR)
 
 

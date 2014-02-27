@@ -10,8 +10,12 @@ try:
 except ImportError:
     from mock import patch, Mock
 
-from ..admin import SlotTimeAdmin, CalendarAdmin, SlotTimesGenerationAdmin
-from ..models import SlotTime, Calendar, SlotTimesGeneration
+from django.contrib import messages
+from django.core.exceptions import ImproperlyConfigured
+
+from ..admin import (BookingTypeAdmin, CalendarAdmin, SlotTimeAdmin,
+                     SlotTimesGenerationAdmin)
+from ..models import (BookingType, SlotTime, Calendar, SlotTimesGeneration)
 from .factories import BookingTypeF
 
 
@@ -45,7 +49,47 @@ class SlotTimeAdminTest(TestCase):
 
 
 class BookingTypeAdminTest(TestCase):
-    pass
+
+    def setUp(self):
+        self.bookingtypeadmin = BookingTypeAdmin(BookingType, AdminSite)
+        self.mock_message = Mock()
+        self.mock_request = Mock()
+        self.mock_form = Mock()
+        self.mock_link = Mock()
+        self.mock_link.slug = 'link-slug'
+
+    def tearDown(self):
+        self.mock_message.reset_mock()
+        self.mock_request.reset_mock()
+        self.mock_form.reset_mock()
+        self.mock_link.reset_mock()
+
+    def test_save_model_create_link(self):
+        mock_get_or_create_link = Mock(return_value=(self.mock_link, True,))
+        self.bookingtypeadmin.message_user = self.mock_message
+        booking_type = BookingTypeF.build()
+        booking_type.get_or_create_link = mock_get_or_create_link
+        self.bookingtypeadmin.save_model(self.mock_request, booking_type,
+                                         self.mock_form, True)
+        mock_get_or_create_link.assert_is_called_once()
+        self.mock_message.assert_called_once_with(
+            self.mock_request,
+            'Link to "{0}" successfully created'.format(self.mock_link.slug),
+            level=messages.SUCCESS)
+
+    def test_save_model_raise_iomproperly_configured(self):
+        msg = 'ImproperlyConfigured message'
+        mock_get_or_create_link = Mock(side_effect=ImproperlyConfigured(msg))
+        self.bookingtypeadmin.message_user = self.mock_message
+        booking_type = BookingTypeF.build()
+        booking_type.get_or_create_link = mock_get_or_create_link
+        self.bookingtypeadmin.save_model(self.mock_request, booking_type,
+                                         self.mock_form, True)
+        mock_get_or_create_link.assert_is_called_once()
+        self.mock_message.assert_called_once_with(
+            self.mock_request,
+            'Error on Link creation: {0}'.format(msg),
+            level=messages.ERROR)
 
 
 class SlotTimesGenerationAdminTest(TestCase):
