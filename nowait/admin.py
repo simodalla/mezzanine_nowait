@@ -1,6 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import unicode_literals
 
+from copy import deepcopy
+
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.contrib import messages
@@ -9,9 +11,11 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.shortcuts import redirect
 
+from mezzanine.core.admin import DisplayableAdmin, TabularDynamicInlineAdmin
+
 from .defaults import NOWAIT_GROUP_ADMINS
-from .models import (BookingType, Calendar, DailySlotTimePattern, SlotTime,
-                     SlotTimesGeneration, Booking)
+from .models import (Booking, BookingType, Calendar, DailySlotTimePattern,
+                     Email, SlotTime, SlotTimesGeneration)
 
 
 class MixinCheckOperatorAdminView(object):
@@ -36,17 +40,29 @@ class BookingTypeInline(admin.TabularInline):
     ordering = ['name']
 
 
-class DailySlotTimePatternInline(admin.TabularInline):
+class DailySlotTimePatternInline(TabularDynamicInlineAdmin):
     extra = 1
     model = DailySlotTimePattern
     ordering = ['day', 'start_time', 'end_time']
 
 
-class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
-    inlines = [DailySlotTimePatternInline]
-    list_display = ['title', 'calendar', 'slot_length', 'description', 'notes',
-                    'link']
+class EmailAdmin(admin.ModelAdmin):
+    list_display = ['pk', 'email', 'notes']
+    list_editable = ['email', 'notes']
     list_per_page = 20
+    search_fields = ('email',)
+
+
+class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
+    _booking_type_fieldset = (
+        None, {'fields': ('title', 'slot_length', 'calendar', 'info',
+                          'notes', 'operators', 'notifications_email_enable',
+                          'notifications_emails', 'raw_location')})
+    inlines = [DailySlotTimePatternInline]
+    list_display = ('title', 'status', 'admin_link', 'calendar', 'slot_length',
+                    'notes', 'link',)
+    list_per_page = 20
+    radio_fields = {'calendar': admin.VERTICAL}
 
     def save_model(self, request, obj, form, change):
         obj.save()
@@ -60,6 +76,17 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
             msg = 'Error on Link creation: {error_message}'.format(
                 error_message=str(e))
             self.message_user(request, msg, level=messages.ERROR)
+
+    def get_fieldsets(self, request, obj=None):
+        displayable_fieldset = list(deepcopy(
+            super(BookingTypeAdmin, self).get_fieldsets(request, obj=obj)))
+        displayable_fieldset[0][1]['fields'].pop(0)
+        displayable_fieldset[0][1].update({'classes': (u'collapse-closed',)})
+        displayable_fieldset[0] = list(displayable_fieldset[0])
+        displayable_fieldset[0][0] = _('Publication data')
+        displayable_fieldset[0] = tuple(displayable_fieldset[0])
+        displayable_fieldset.insert(0, self._booking_type_fieldset)
+        return tuple(displayable_fieldset)
 
 
 class CalendarAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
@@ -150,5 +177,6 @@ class BookingAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 admin.site.register(Booking, BookingAdmin)
 admin.site.register(BookingType, BookingTypeAdmin)
 admin.site.register(Calendar, CalendarAdmin)
+admin.site.register(Email, EmailAdmin)
 admin.site.register(SlotTime, SlotTimeAdmin)
 admin.site.register(SlotTimesGeneration, SlotTimesGenerationAdmin)

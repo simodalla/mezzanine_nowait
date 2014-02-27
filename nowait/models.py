@@ -46,6 +46,7 @@ class Calendar(TimeStampedModel):
     gsummary = models.CharField(_('google summary'), max_length=300, blank=True)
 
     class Meta:
+        ordering = ['name']
         verbose_name = _('calendar')
         verbose_name_plural = _('calendars')
 
@@ -55,8 +56,13 @@ class Calendar(TimeStampedModel):
 
 @python_2_unicode_compatible
 class Email(TimeStampedModel):
-    email = models.EmailField(_('email'))
-    notes = models.TextField(_('notes'), max_length=300, blank=True)
+    email = models.EmailField(_('email'), unique=True)
+    notes = models.CharField(_('notes'), max_length=300, blank=True)
+
+    class Meta:
+        ordering = ['email']
+        verbose_name = _('email')
+        verbose_name_plural = _('emails')
 
     def __str__(self):
         return self.email
