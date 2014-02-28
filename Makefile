@@ -29,7 +29,7 @@ lint:
 test:
 	python project_template/manage.py test nowait
 
-test-functional:
+test-functionals:
 	python project_template/manage.py test functional_tests
 
 test-tox:

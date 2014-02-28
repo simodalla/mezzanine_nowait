@@ -14,11 +14,23 @@ from django.contrib.sessions.backends.db import SessionStore
 
 from selenium import webdriver
 
+try:
+    from pyvirtualdisplay import Display
+except ImportError:
+    pass
+
 
 class FunctionalTest(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.display = None
+        try:
+            display = Display(visible=0, size=(800, 600))
+            display.start()
+            print(display)
+        except:
+            print("NO DISPLAY")
         for arg in sys.argv:
             if 'liveserver' in arg:
                 cls.server_url = 'http://' + arg.split('=')[1]
@@ -28,6 +40,8 @@ class FunctionalTest(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        if cls.display:
+            cls.display.stop()
         if cls.server_url == cls.live_server_url:
             LiveServerTestCase.tearDownClass()
 
