@@ -1,13 +1,18 @@
 # -*- coding: iso-8859-1 -*-
 
 from django import forms
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.forms import ModelMultipleChoiceField
 from django.utils.translation import ugettext as _
+
+from mezzanine.utils.models import get_user_model
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Field, Fieldset
 from crispy_forms.bootstrap import FormActions
 
-from .models import Booking
+from .models import Booking, BookingType, Email
+from .utils import UserChoiceField
 
 
 class BookingCreateForm(forms.ModelForm):
@@ -82,3 +87,18 @@ class CalendarGoogleConnectForm(forms.Form):
 
         if calendars:
             self.fields['google_calendar'].choices = calendars
+
+
+class BookingTypeAdminForm(forms.ModelForm):
+    operators = UserChoiceField(
+        queryset=get_user_model().objects.order_by(
+            'last_name', 'first_name', 'username'),
+        required=False,
+        widget=FilteredSelectMultiple(_('operators'), False))
+    notifications_emails = ModelMultipleChoiceField(
+        queryset=Email.objects.order_by('email'),
+        required=False,
+        widget=FilteredSelectMultiple(_('Emails to notify'), False))
+
+    class Meta:
+            model = BookingType
