@@ -1,5 +1,21 @@
 {% extends 'pages/page.html' %}
-{% load l10n i18n mezzanine_tags %}
+{% load i18n mezzanine_tags %}
+
+{% block title %}
+<div id="bookingtype_title" class="jumbotron">
+    <h1>{{ object.title }}</h1>
+    {% if object.intro %}
+    <div id="bookingtype_intro">
+        {% editable object.intro %}
+            {{ object.info|richtext_filters|safe }}
+        {% endeditable %}
+    </div>
+    {% endif %}
+    {% url 'nowait:slottime_select' slug=object.slug as slottime_select %}
+    <p><a class="btn btn-primary btn-lg" href="{{ slottime_select }}" role="button">
+        {% trans "Make your reservation" %} &raquo;</a></p>
+</div>
+{% endblock %}
 
 {% block main %}
     {{ block.super }}
@@ -12,6 +28,6 @@
               id="btn_slottime_select_for_{{ object.pk }}"
               class="btn btn-primary btn-large">Fissa il tuo appuntamento &raquo;</a>
     </div>
-    {{ object.bookingtypepage.info|richtext_filters|safe }}
+    {{ object.bookingtypepage.intro|richtext_filters|safe }}
     {% endcomment %}
 {% endblock %}
