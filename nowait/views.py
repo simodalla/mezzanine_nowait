@@ -29,8 +29,7 @@ class BookingTypeDetailView(PageContextTitleMixin, DetailView):
         return _('%(title)s') % {'title': self.object.title.title()}
 
 
-class SlottimeSelectView(PageContextTitleMixin, LoginRequiredMixin,
-                         TemplateView):
+class SlottimeSelectView(PageContextTitleMixin, TemplateView):
     template_name = 'nowait/slottime_select.html'
     page_title = _('Select day and slot time')
     booking_type = None
