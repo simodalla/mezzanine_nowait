@@ -7,7 +7,7 @@
     {% if object.intro %}
     <div id="bookingtype_intro">
         {% editable object.intro %}
-            {{ object.info|richtext_filters|safe }}
+            {{ object.intro|richtext_filters|safe }}
         {% endeditable %}
     </div>
     {% endif %}
@@ -18,16 +18,9 @@
 {% endblock %}
 
 {% block main %}
-    {{ block.super }}
-
-    {% comment %}
-    <div class="hero-unit" style="padding: 30px;">
-        <h1>{{ object.name }}</h1>
-        <br>
-        <a href="{% url 'nowait:slottime_select' object.slug %}"
-              id="btn_slottime_select_for_{{ object.pk }}"
-              class="btn btn-primary btn-large">Fissa il tuo appuntamento &raquo;</a>
+    <div id="bookingtype_informations">
+        {% editable object.informations %}
+            {{ object.informations|richtext_filters|safe }}
+        {% endeditable %}
     </div>
-    {{ object.bookingtypepage.intro|richtext_filters|safe }}
-    {% endcomment %}
 {% endblock %}
