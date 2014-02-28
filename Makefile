@@ -29,7 +29,10 @@ lint:
 test:
 	python project_template/manage.py test nowait
 
-test-all:
+test-functional:
+	python project_template/manage.py test functional_tests
+
+test-tox:
 	tox
 
 coverage-console:

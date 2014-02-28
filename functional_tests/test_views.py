@@ -92,4 +92,4 @@ class SlottimeSelectViewTest(FunctionalTest):
         self.browser.get(self.get_url(
             reverse('nowait:slottime_select',
                     kwargs={'slug': self.bookingtype.slug})))
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()

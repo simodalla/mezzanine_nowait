@@ -19,4 +19,3 @@ class AdminTest(FunctionalTest):
     def test_add_booking_type(self):
         self.browser.get(
             self.get_url(admin_urlname(BookingType._meta, 'changelist')))
-        time.sleep(5)
