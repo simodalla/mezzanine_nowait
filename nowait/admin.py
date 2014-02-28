@@ -61,13 +61,13 @@ class EmailAdmin(admin.ModelAdmin):
 class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
     _booking_type_fieldset = (
         _('Booking type data'),
-        {'fields': ('title', 'slot_length', 'calendar', 'info',
-                    'notes', 'operators', 'notifications_email_enable',
+        {'fields': ('title', 'slot_length', 'calendar', 'intro',
+                    'informations', 'operators', 'notifications_email_enable',
                     'notifications_emails', 'raw_location')})
     form = BookingTypeAdminForm
     inlines = [DailySlotTimePatternInline]
     list_display = ('title', 'status', 'admin_link', 'calendar', 'slot_length',
-                    'notes', 'link',)
+                    'informations', 'link',)
     list_per_page = 20
     radio_fields = {'calendar': admin.VERTICAL}
 
@@ -169,7 +169,7 @@ class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
 class BookingAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     list_display = ['pk', 'user', 'formatted_day', 'formatted_start',
-                    'formatted_end', 'notes', 'telephone']
+                    'formatted_end', 'informations', 'telephone']
     list_per_page = 20
     search_fields = ['id', 'user__username', 'user__last_name',
                      'user__first_name', 'slottime__booking_type__name']

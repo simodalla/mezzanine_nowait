@@ -107,7 +107,7 @@ class BookingTypeF(factory.DjangoModelFactory):
 
     calendar = factory.SubFactory(CalendarPatternsFactory)
     title = factory.Sequence(lambda n: 'bookingtype_%s' % n)
-    info = factory.LazyAttribute(lambda a: 'info on {0}'.format(a.title))
+    intro = factory.LazyAttribute(lambda a: 'intro on {0}'.format(a.title))
     slug = factory.LazyAttribute(lambda a: '-'.join(a.title.split(' ')))
 
 
