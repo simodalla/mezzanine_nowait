@@ -20,6 +20,7 @@ from mezzanine.core.admin import DisplayableAdmin, TabularDynamicInlineAdmin
 from .defaults import NOWAIT_GROUP_ADMINS
 from .models import (Booking, BookingType, Calendar, DailySlotTimePattern,
                      Email, SlotTime, SlotTimesGeneration)
+from .forms import BookingTypeAdminForm
 
 
 class MixinCheckOperatorAdminView(object):
@@ -63,6 +64,7 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
         {'fields': ('title', 'slot_length', 'calendar', 'info',
                     'notes', 'operators', 'notifications_email_enable',
                     'notifications_emails', 'raw_location')})
+    form = BookingTypeAdminForm
     inlines = [DailySlotTimePatternInline]
     list_display = ('title', 'status', 'admin_link', 'calendar', 'slot_length',
                     'notes', 'link',)
