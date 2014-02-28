@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 nowait tests
+	flake8 --exclude=migrations nowait tests
 
 test:
 	python project_template/manage.py test nowait
