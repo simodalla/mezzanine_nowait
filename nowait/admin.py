@@ -59,9 +59,10 @@ class EmailAdmin(admin.ModelAdmin):
 
 class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
     _booking_type_fieldset = (
-        None, {'fields': ('title', 'slot_length', 'calendar', 'info',
-                          'notes', 'operators', 'notifications_email_enable',
-                          'notifications_emails', 'raw_location')})
+        _('Booking type data'),
+        {'fields': ('title', 'slot_length', 'calendar', 'info',
+                    'notes', 'operators', 'notifications_email_enable',
+                    'notifications_emails', 'raw_location')})
     inlines = [DailySlotTimePatternInline]
     list_display = ('title', 'status', 'admin_link', 'calendar', 'slot_length',
                     'notes', 'link',)
@@ -82,14 +83,25 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
             self.message_user(request, msg, level=messages.ERROR)
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Merge original DisplayableAdmin with fields of BookingType model.
+        """
         displayable_fieldset = list(deepcopy(
             super(BookingTypeAdmin, self).get_fieldsets(request, obj=obj)))
-        displayable_fieldset[0][1]['fields'].pop(0)
-        displayable_fieldset[0][1].update({'classes': (u'collapse-closed',)})
-        displayable_fieldset[0] = list(displayable_fieldset[0])
-        displayable_fieldset[0][0] = _('Publication data')
-        displayable_fieldset[0] = tuple(displayable_fieldset[0])
-        displayable_fieldset.insert(0, self._booking_type_fieldset)
+        if displayable_fieldset[0][1]['fields'][0] == 'title':
+            displayable_fieldset[0][1]['fields'].pop(0)
+            displayable_fieldset[0][1].update(
+                {'classes': (u'collapse-closed',)})
+            displayable_fieldset[0] = list(displayable_fieldset[0])
+            displayable_fieldset[0][0] = _('Publication data')
+            displayable_fieldset[0] = tuple(displayable_fieldset[0])
+            displayable_fieldset.insert(0, self._booking_type_fieldset)
+        else:
+            displayable_fieldset += self._booking_type_fieldset
+            msg = _('Wrong form for "%(model)s" creation, please contact'
+                    ' site administrator.') % {
+                        'model': self.model._meta.verbose_name}
+            self.message_user(request, msg, level=messages.ERROR)
         return tuple(displayable_fieldset)
 
 

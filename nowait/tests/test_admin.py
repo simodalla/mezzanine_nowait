@@ -51,8 +51,10 @@ class SlotTimeAdminTest(TestCase):
 class BookingTypeAdminTest(TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.bookingtypeadmin = BookingTypeAdmin(BookingType, AdminSite)
         self.mock_message = Mock()
+        self.bookingtypeadmin.message_user = self.mock_message
         self.mock_request = Mock()
         self.mock_form = Mock()
         self.mock_link = Mock()
@@ -66,7 +68,7 @@ class BookingTypeAdminTest(TestCase):
 
     def test_save_model_create_link(self):
         mock_get_or_create_link = Mock(return_value=(self.mock_link, True,))
-        self.bookingtypeadmin.message_user = self.mock_message
+
         booking_type = BookingTypeF.build()
         booking_type.get_or_create_link = mock_get_or_create_link
         self.bookingtypeadmin.save_model(self.mock_request, booking_type,
@@ -90,6 +92,103 @@ class BookingTypeAdminTest(TestCase):
             self.mock_request,
             'Error on Link creation: {0}'.format(msg),
             level=messages.ERROR)
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_not_first_title_get_fieldsets_return_displayableadmin_fieldset(
+            self, mock_get_fieldsets):
+        """
+        If the first element of 'fields' of first element (a tuple)
+        DisplayableAdmin fieldset is not 'title' get_fieldset only append
+        _booking_type_fieldset to original DisplayableAdmin fieldsets
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.assertEqual(fieldset,
+                         (displayableadmin_fieldset
+                          + self.bookingtypeadmin._booking_type_fieldset))
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_not_first_title_get_fieldsets_display_error_message(
+            self, mock_get_fieldsets):
+        """
+        If the first element of 'fields' of first element (a tuple)
+        DisplayableAdmin fieldset is not 'title' get_fieldset display error
+        message
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.mock_message.assert_called_once_with(
+            self.mock_request,
+            'Wrong form for "{model}" creation, please contact site'
+            ' administrator.'.format(
+                model=self.bookingtypeadmin.model._meta.verbose_name),
+            level=messages.ERROR)
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_get_fieldsets_first_element_is_local(self, mock_get_fieldsets):
+        """
+        Test that the first element of fieldset returned from get_fieldset
+        is equal to _booking_type_fieldset attr of BookingTypeAdmin
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['title', 'status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.assertEqual(fieldset[0],
+                         self.bookingtypeadmin._booking_type_fieldset)
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_get_fieldsets_title_remove_from_original(self, mock_get_fieldsets):
+        """
+        Test that the second element of fieldset returned from get_fieldset
+        is the original first element of fieldset of DisplayableAdmin but
+        without title element
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['title', 'status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        displayableadmin_fieldset[0][1]['fields'].pop(0)
+        self.assertEqual(fieldset[1][1]['fields'],
+                         displayableadmin_fieldset[0][1]['fields'])
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_get_fieldsets_collapse_closed_class(self, mock_get_fieldsets):
+        """
+        Test that the second element of fieldset returned from get_fieldset
+        is the original first element of fieldset of DisplayableAdmin but
+        with 'collapse-closed' class
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['title', 'status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.assertIn('classes', fieldset[1][1])
+        self.assertIn('collapse-closed', fieldset[1][1]['classes'])
+
+
+    @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
+    def test_get_fieldsets_label_publication_data(self, mock_get_fieldsets):
+        """
+        Test that the second element of fieldset returned from get_fieldset
+        is the original first element of fieldset of DisplayableAdmin but
+        with name setted to 'Publication data'
+        """
+        displayableadmin_fieldset = (
+            (None, {u'fields': ['title', 'status']}),
+            (None, {u'fields': []}))
+        mock_get_fieldsets.return_value = displayableadmin_fieldset
+        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.assertEqual(fieldset[1][0], 'Publication data')
 
 
 class SlotTimesGenerationAdminTest(TestCase):
