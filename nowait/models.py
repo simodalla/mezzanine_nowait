@@ -4,12 +4,11 @@ from __future__ import unicode_literals, absolute_import
 import warnings
 
 from django.conf import settings
-from django.core.exceptions import (ValidationError, ImproperlyConfigured,
-                                    ObjectDoesNotExist)
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import (datetime, timedelta, make_aware,
                                    get_current_timezone, now)
 
