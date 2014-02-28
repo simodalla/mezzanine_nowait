@@ -17,7 +17,9 @@ install:
   - pip install -r requirements/requirements-test.txt
 
 # command to run tests using coverage
-script: coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
+script:
+  - make lint
+  - coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
 
 # report coverage to coveralls.io
 after_success: coveralls
