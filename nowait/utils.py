@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
+from django.forms import ModelMultipleChoiceField
 
 from mezzanine.conf import settings
 from mezzanine.pages.models import Page
@@ -29,6 +30,18 @@ class PageContextTitleMixin(object):
         context = super(PageContextTitleMixin, self).get_context_data(**kwargs)
         context.update({"title": self.get_page_title()})
         return context
+
+
+class UserChoiceField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        label = ''
+        if obj.last_name:
+            label += '%s ' % obj.last_name
+        if obj.first_name:
+            label += '%s' % obj.first_name
+        label = label if label else obj.username
+        label += ' [{}]'.format(obj.email) if obj.email else ''
+        return label.strip()
 
 
 def get_app_setting(app_label, setting):
