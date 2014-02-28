@@ -65,10 +65,10 @@ class BookingType(Displayable):
     slot_length = models.PositiveIntegerField(
         _('slot length'), default=30,
         help_text=_('Length in minutes of slot time.'))
-    info = RichTextField(_('info'), blank=True)
+    intro = RichTextField(_('intro'), blank=True)
     calendar = models.ForeignKey(Calendar, verbose_name=_('calendar'),
                                  blank=True, null=True)
-    notes = RichTextField(_('notes'), blank=True)
+    informations = RichTextField(_('informations'), blank=True)
     operators = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, null=True,
         verbose_name=_('operators'))
