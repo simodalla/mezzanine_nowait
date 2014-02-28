@@ -41,4 +41,3 @@ dis parturient montes, nascetur ridiculus mus. Donec quam felis,"""
                                  kwargs={'slug': self.bookingtype.slug})))
 
     # def test_content_block(self):
-
