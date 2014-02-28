@@ -9,12 +9,12 @@ from django.db import transaction
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import FormView
 
 from mezzanine.conf import settings
 
-from braces.views import LoginRequiredMixin, GroupRequiredMixin
+from braces.views import LoginRequiredMixin
 from mezzanine.utils.email import send_mail_template
 
 from .utils import PageContextTitleMixin
@@ -31,7 +31,6 @@ class BookingTypeDetailView(PageContextTitleMixin, DetailView):
 
 class SlottimeSelectView(PageContextTitleMixin, LoginRequiredMixin,
                          TemplateView):
-
     template_name = 'nowait/slottime_select.html'
     page_title = _('Select day and slot time')
     booking_type = None
@@ -61,7 +60,8 @@ class SlottimeSelectView(PageContextTitleMixin, LoginRequiredMixin,
         context['slottimes'] = []
         for month, year in [
             (start.month + i, start.year) if start.month + i <= 12
-            else ((start.month + i) % 12, start.year + 1) for i in range(0, 3)]:
+            else ((start.month + i) % 12, start.year + 1) for i in range(0,
+                                                                         3)]:
             qs = slottimes.filter(start__month=month, start__year=year)
             if len(qs) > 0:
                 context['slottimes'].append(
@@ -81,7 +81,8 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
                 pk=kwargs['slottime_pk'])
         except SlotTime.DoesNotExist:
             return redirect('bookme:slottime_select')
-        return super(BookingCreateView, self).dispatch(request, *args, **kwargs)
+        return super(BookingCreateView, self).dispatch(request, *args,
+                                                       **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(BookingCreateView, self).get_context_data(**kwargs)
@@ -111,8 +112,8 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
                 self.request,
                 _('Your booking for "%(booking_type)s" is succesfully created'
                   ' with id: %(pk)s') %
-                  {'booking_type': booking.slottime.booking_type.name,
-                   'pk': '<b>{}</b>'.format(booking.pk)},
+                {'booking_type': booking.slottime.booking_type.name,
+                 'pk': '<b>{}</b>'.format(booking.pk)},
                 extra_tags='safe')
         except:
             transaction.rollback()
@@ -120,9 +121,9 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         else:
             transaction.commit()
             for template, addr_to in [
-                    ('booking_created', booking.user.email),
-                    ('booking_created_operator',
-                     booking.slottime.booking_type.get_operator_emails())]:
+                ('booking_created', booking.user.email),
+                ('booking_created_operator',
+                 booking.slottime.booking_type.get_operator_emails())]:
                 send_mail_template('bookme/email/{}'.format(template),
                                    settings.SERVER_EMAIL,
                                    addr_to,

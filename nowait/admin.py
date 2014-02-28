@@ -102,7 +102,7 @@ class BookingTypeAdmin(MixinCheckOperatorAdminView, DisplayableAdmin):
             displayable_fieldset += self._booking_type_fieldset
             msg = _('Wrong form for "%(model)s" creation, please contact'
                     ' site administrator.') % {
-                        'model': self.model._meta.verbose_name}
+                'model': self.model._meta.verbose_name}
             self.message_user(request, msg, level=messages.ERROR)
         return tuple(displayable_fieldset)
 
@@ -112,7 +112,8 @@ class CalendarAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
     list_per_page = 20
 
     def booking_type_links(self, obj):
-        link_tpl = '<a href="{url}?id={bookinktype.pk}">{bookinktype.title}</a>'
+        link_tpl = ('<a href="{url}?id={bookinktype.pk}">{bookinktype.title}'
+                    '</a>')
         return '<br >'.join([
             link_tpl.format(
                 url=reverse(admin_urlname(bt._meta, 'changelist')),

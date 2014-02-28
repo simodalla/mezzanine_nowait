@@ -28,9 +28,8 @@ def get_range_days(start_date, end_date):
 
     days = []
     for month in range(start_date.month, end_date.month + 1):
-        month_days = [date_obj for date_obj in c.itermonthdates(start_date.year,
-                                                                month)
-                      if (date_obj.month == month)]
+        month_days = [date_obj for date_obj in c.itermonthdates(
+            start_date.year, month) if (date_obj.month == month)]
         if month == start_date.month:
             days += [date_obj for date_obj in month_days
                      if date_obj.day >= start_date.day]

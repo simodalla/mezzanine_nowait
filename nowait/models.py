@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
-import warnings
-
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.urlresolvers import reverse
@@ -21,12 +19,6 @@ from model_utils.models import TimeStampedModel, StatusField
 from .core import get_range_days, get_week_map_by_weekday
 from .utils import get_root_app_page
 
-try:
-    #noinspection PyUnresolvedReferences
-    from djga.models import Credential
-except ImportError:
-    import warnings
-
 
 DAYS = Choices((0, 'mo', _('monday')), (1, 'tu', _('tuesday')),
                (2, 'we', _('wednesday')), (3, 'th', _('thursday')),
@@ -42,7 +34,8 @@ class Calendar(TimeStampedModel):
                               verbose_name=_('owner'))
     gid = models.CharField(_('google id'), max_length=300, blank=True,
                            unique=True)
-    gsummary = models.CharField(_('google summary'), max_length=300, blank=True)
+    gsummary = models.CharField(_('google summary'), max_length=300,
+                                blank=True)
 
     class Meta:
         ordering = ['name']
@@ -172,7 +165,7 @@ class SlotTimesGeneration(TimeStampedModel):
                     datetime.combine(day, pattern.end_time),
                     get_current_timezone())
                 while (((end_datetime - cache_start_datetime).seconds / 60)
-                           >= pattern.booking_type.slot_length):
+                        >= pattern.booking_type.slot_length):
                     start_slot = cache_start_datetime
                     end_slot = cache_start_datetime + timedelta(
                         minutes=pattern.booking_type.slot_length)

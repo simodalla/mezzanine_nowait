@@ -32,17 +32,17 @@ class BookingCreateForm(forms.ModelForm):
             Fieldset(
                 '',
                 HTML('<div class="alert alert-info text-center">'
-                    'Tipo di pratica selezionata: <strong>'
-                    ' {{ slottime.booking_type.name }}</strong></div>'),
+                     'Tipo di pratica selezionata: <strong>'
+                     ' {{ slottime.booking_type.name }}</strong></div>'),
                 HTML('<div class="alert alert-info text-center">'
-                    'Fascia oraria selezionata: <strong>'
-                    '{{ slottime.start|date:"l j F Y" }} dalle'
-                    ' {{ slottime.start|date:"H:i" }} alle'
-                    ' {{ slottime.end|date:"H:i" }}</strong>'
-                    '&nbsp;&nbsp;&nbsp;<a href="'
-                    '{% url \'bookme:slottime_select\''
-                    ' slottime.booking_type.slug %}" class="btn btn-small'
-                    ' btn-inverse">Cambiala &raquo;</a></div>'),
+                     'Fascia oraria selezionata: <strong>'
+                     '{{ slottime.start|date:"l j F Y" }} dalle'
+                     ' {{ slottime.start|date:"H:i" }} alle'
+                     ' {{ slottime.end|date:"H:i" }}</strong>'
+                     '&nbsp;&nbsp;&nbsp;<a href="'
+                     '{% url \'bookme:slottime_select\''
+                     ' slottime.booking_type.slug %}" class="btn btn-small'
+                     ' btn-inverse">Cambiala &raquo;</a></div>'),
                 'slottime',
                 Field('notes', css_class="input-xlarge"),
                 Field('telephone', css_class="input-xlarge"),
@@ -101,4 +101,4 @@ class BookingTypeAdminForm(forms.ModelForm):
         widget=FilteredSelectMultiple(_('Emails to notify'), False))
 
     class Meta:
-            model = BookingType
+        model = BookingType

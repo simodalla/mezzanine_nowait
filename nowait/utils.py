@@ -6,7 +6,6 @@ from django.forms import ModelMultipleChoiceField
 
 from mezzanine.conf import settings
 from mezzanine.pages.models import Page
-from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
 
 
 class PageContextTitleMixin(object):
@@ -46,7 +45,8 @@ class UserChoiceField(ModelMultipleChoiceField):
 
 def get_app_setting(app_label, setting):
     settings.use_editable()
-    setting_root_slug_key = '{0}_{1}'.format(app_label.upper(), setting.upper())
+    setting_root_slug_key = '{0}_{1}'.format(app_label.upper(),
+                                             setting.upper())
     slug = getattr(settings, setting_root_slug_key, None)
     if not slug:
         raise ImproperlyConfigured("The {0} setting must not be empty.".format(
@@ -72,5 +72,3 @@ def get_root_app_page(app_label):
     except Page.DoesNotExist:
         raise ImproperlyConfigured('No page with slug "{0}" was found'.format(
             slug))
-
-
