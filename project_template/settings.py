@@ -246,7 +246,7 @@ INSTALLED_APPS = (
     "mezzanine.generic",
     "mezzanine.pages",
     #"mezzanine.accounts",
-    "django_pdb",
+    # "django_pdb",
     "crispy_forms",
     # "functional_tests",
 )
@@ -287,7 +287,7 @@ MIDDLEWARE_CLASSES = (
     # "mezzanine.core.middleware.SSLRedirectMiddleware",
     "mezzanine.pages.middleware.PageMiddleware",
     "mezzanine.core.middleware.FetchFromCacheMiddleware",
-    "django_pdb.middleware.PdbMiddleware",
+    # "django_pdb.middleware.PdbMiddleware",
 )
 
 # Store these package names here as they may change in the future since
