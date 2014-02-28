@@ -246,7 +246,9 @@ INSTALLED_APPS = (
     "mezzanine.generic",
     "mezzanine.pages",
     #"mezzanine.accounts",
+    "django_pdb",
     "crispy_forms",
+    # "functional_tests",
 )
 
 # List of processors used by RequestContext to populate the context.
@@ -285,6 +287,7 @@ MIDDLEWARE_CLASSES = (
     # "mezzanine.core.middleware.SSLRedirectMiddleware",
     "mezzanine.pages.middleware.PageMiddleware",
     "mezzanine.core.middleware.FetchFromCacheMiddleware",
+    "django_pdb.middleware.PdbMiddleware",
 )
 
 # Store these package names here as they may change in the future since
@@ -345,6 +348,10 @@ try:
 except ImportError:
     pass
 
+# for functional tests
+INSTALLED_APPS = list(INSTALLED_APPS) + [
+    PACKAGE_NAME_GRAPPELLI, PACKAGE_NAME_FILEBROWSER,
+    'django.contrib.redirects']
 
 ####################
 # DYNAMIC SETTINGS #
