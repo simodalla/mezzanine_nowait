@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 --exclude=migrations nowait tests
+	flake8 --exclude=migrations nowait functional_tests
 
 test:
 	python project_template/manage.py test nowait
@@ -33,7 +33,7 @@ test-all:
 	tox
 
 coverage-console:
-	coverage run --source nowait --omit=nowait/migrations/*,*/tests/factories.py  project_template/manage.py test nowait
+	coverage run --source nowait --omit=nowait/migrations/*,*/tests/factories.py project_template/manage.py test nowait
 	coverage report -m
 
 coverage: coverage-console
