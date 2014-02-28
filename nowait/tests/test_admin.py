@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import
 from django.contrib.admin import AdminSite
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils.timezone import timedelta, now, datetime
+from django.utils.timezone import timedelta, now
 try:
     from unittest.mock import patch, Mock
 except ImportError:
@@ -122,7 +122,7 @@ class BookingTypeAdminTest(TestCase):
             (None, {u'fields': ['status']}),
             (None, {u'fields': []}))
         mock_get_fieldsets.return_value = displayableadmin_fieldset
-        fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
+        self.bookingtypeadmin.get_fieldsets(self.mock_request)
         self.mock_message.assert_called_once_with(
             self.mock_request,
             'Wrong form for "{model}" creation, please contact site'
@@ -145,7 +145,8 @@ class BookingTypeAdminTest(TestCase):
                          self.bookingtypeadmin._booking_type_fieldset)
 
     @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
-    def test_get_fieldsets_title_remove_from_original(self, mock_get_fieldsets):
+    def test_get_fieldsets_title_remove_from_original(
+            self, mock_get_fieldsets):
         """
         Test that the second element of fieldset returned from get_fieldset
         is the original first element of fieldset of DisplayableAdmin but
@@ -174,7 +175,6 @@ class BookingTypeAdminTest(TestCase):
         fieldset = self.bookingtypeadmin.get_fieldsets(self.mock_request)
         self.assertIn('classes', fieldset[1][1])
         self.assertIn('collapse-closed', fieldset[1][1]['classes'])
-
 
     @patch('nowait.admin.DisplayableAdmin.get_fieldsets')
     def test_get_fieldsets_label_publication_data(self, mock_get_fieldsets):
@@ -210,4 +210,3 @@ class SlotTimesGenerationAdminTest(TestCase):
             '<a href="{url}?generation={stg.pk}">{count}</a>'.format(
                 url=reverse('admin:nowait_slottime_changelist'),
                 stg=slottimegeneration, count=slottimes))
-

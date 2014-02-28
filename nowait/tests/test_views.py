@@ -36,12 +36,9 @@ class SlottimeSelectViewTest(TestCase):
         self.assertRedirects(response, '/%s/' % NOWAIT_ROOT_SLUG)
 
     def test_get_page_title(self):
-        response = self.client.get(self.url.format(slug=self.booking_type.slug))
+        response = self.client.get(
+            self.url.format(slug=self.booking_type.slug))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('title' in response.context)
         self.assertEqual(response.context['title'],
                          'Select day and slot time')
-
-    # def test_
-        # print(response.context['slottimes'])
-

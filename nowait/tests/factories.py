@@ -17,8 +17,7 @@ class NowaitGOperatorsF(factory.DjangoModelFactory):
 
     @classmethod
     def _prepare(cls, create, **kwargs):
-        group = super(NowaitGOperatorsF, cls)._prepare(create,
-                                                                 **kwargs)
+        group = super(NowaitGOperatorsF, cls)._prepare(create, **kwargs)
         group.permissions.add(
             *Permission.objects.filter(content_type__app_label='bookme',
                                        codename__startswith='change'))

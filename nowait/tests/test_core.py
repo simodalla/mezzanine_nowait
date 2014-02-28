@@ -24,7 +24,8 @@ class GetRangeDaysTest(TestCase):
 
     def test_create_slot_times_call_with_same_day_same_month(self):
         """
-        Test the correct returned list from create_slot_times with the same date
+        Test the correct returned list from create_slot_times with the same
+        date.
         """
         days = get_range_days(self.start_date, self.start_date)
         self.assertEqual(len(days), 1)
@@ -66,5 +67,5 @@ class GetWeekMapByWeekdayTest(TestCase):
         self.assertRaises(ValueError, get_week_map_by_weekday, 777)
 
     def test_get_week_map_by_weekday_call(self):
-        result = get_week_map_by_weekday(get_range_days(self.start_date,
-                                                        self.end_date))
+        get_week_map_by_weekday(get_range_days(self.start_date,
+                                               self.end_date))

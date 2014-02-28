@@ -70,7 +70,8 @@ class BookingTypeModelTest(TestCase):
         self.assertEqual(link.title, obj.title)
 
     def test_get_or_create_link_delete_old_link(self):
-        root_page, created = get_or_create_root_app_page(RichTextPage, 'nowait')
+        root_page, created = get_or_create_root_app_page(RichTextPage,
+                                                         'nowait')
         old_wrong_link = Link.objects.create(slug='wrong-slug',
                                              parent=root_page)
         old_wrong_link.delete = Mock()
@@ -356,5 +357,3 @@ class BookingModelTest(TestCase):
         obj = Booking.objects.create()
         self.assertEqual(obj.__str__(),
                          '%s n.%s' % (obj._meta.verbose_name, obj.pk))
-
-

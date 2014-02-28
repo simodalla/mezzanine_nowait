@@ -2,16 +2,16 @@
 from __future__ import unicode_literals
 
 try:
-    from unittest.mock import patch, Mock
+    from unittest.mock import Mock
 except ImportError:
-    from mock import patch, Mock
+    from mock import Mock
 
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 from django.test.utils import override_settings
 
 from mezzanine.conf import settings
-from mezzanine.pages.models import RichTextPage, Link
+from mezzanine.pages.models import RichTextPage
 
 from ..utils import get_or_create_root_app_page
 
@@ -77,9 +77,3 @@ class RootAppPageCreationTest(TestCase):
             mock_model_page, 'nowait', **fake_default)
         mock_model_page.objects.get_or_create.assert_called_once_with(
             slug=settings.NOWAIT_ROOT_SLUG, defaults=self.defaults)
-
-
-
-
-
-
