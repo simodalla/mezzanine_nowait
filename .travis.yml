@@ -13,7 +13,7 @@ env:
 
 # command to install dependencies
 install:
-  - pip install -q Django==$DJANGO_VERSION
+  - pip install Django==$DJANGO_VERSION
   - pip install -r requirements/requirements-test.txt
 
 # command to run tests using coverage
