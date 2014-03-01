@@ -4,12 +4,11 @@ from __future__ import unicode_literals
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now, timedelta
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 
 from .factories import BookingType30F, UserF, RootNowaitPageF
 from ..defaults import NOWAIT_ROOT_SLUG
 from ..models import SlotTime, Booking
-from ..views import BookingCreateView
 from ..utils import RequestMessagesTestMixin
 
 
@@ -60,11 +59,11 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
             booking_type=self.booking_type,
             start=start,
             end=start + timedelta(minutes=self.booking_type.slot_length))
-        self.user = UserF()
+        self.booker = UserF()
         self.url = reverse('nowait:booking_create',
                            kwargs={'slottime_pk': self.slottime.pk})
-        self.client.login(username=self.user.username,
-                          password=self.user.username)
+        self.client.login(username=self.booker.username,
+                          password=self.booker.username)
         self.data = {'slottime': self.slottime.pk,
                      'notes': 'notes on booking',
                      'telephone': '+399900990'}
@@ -101,11 +100,11 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
     def test_on_form_valid_create_new_booking_with_data(self):
         """
         Test valid creation of new booking object and correct setting of
-        slottime, notes, user, telephone fields.
+        slottime, notes, booker, telephone fields.
         """
         self.client.post(self.url, self.data)
         booking = Booking.objects.get(slottime=self.slottime)
-        booking.user = self.user
+        booking.booker = self.booker
         booking.notes = self.data['notes']
         booking.telephone = self.data['telephone']
 
@@ -124,11 +123,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         take of slottime relative to new booking created
         """
         response = self.client.post(self.url, self.data, follow=True)
-        self.assert_in_messages(response, 'msg', level=messages.SUCCESS,
-                                verbose=True)
         booking = Booking.objects.get(slottime=self.slottime)
-        self.assertEqual(booking.slottime.status, SlotTime.STATUS.taken)
-
-
-
-
+        self.assert_in_messages(
+            response, booking.get_success_message_on_creation(),
+            level=messages.SUCCESS, verbose=True)
