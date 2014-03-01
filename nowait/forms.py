@@ -3,7 +3,6 @@
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import ModelMultipleChoiceField
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from mezzanine.utils.models import get_user_model
