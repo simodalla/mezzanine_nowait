@@ -2,17 +2,16 @@
 from __future__ import unicode_literals
 
 from datetime import date, timedelta
+from unittest import skip
 try:
-    from unittest.mock import patch, Mock
+    from unittest.mock import patch
 except ImportError:
-    from mock import patch, Mock
+    from mock import patch
 
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import striptags
-from django.test import TestCase
-from django.utils import timezone
 
-from nowait.tests.factories import AdminF, BookingType30F, UserF
+from nowait.tests.factories import AdminF, BookingType30F
 from .base import FunctionalTest
 
 
@@ -60,32 +59,27 @@ class SlottimeSelectViewTest(FunctionalTest):
         super(SlottimeSelectViewTest, self).setUp()
         self.admin = AdminF()
         self.create_pre_authenticated_session(self.admin)
-        self.today = date(2013, 9, 9) - timedelta(days=2) # Monday
-        start_10 = date(2013, 10, 07)
-        start_11 = date(2013, 11, 04)
+        # 2013-9-9 is a Monday
+        self.today = date(2013, 9, 9) - timedelta(days=2)
+        start_10 = date(2013, 10, 7)
+        start_11 = date(2013, 11, 4)
         print("TODAY:", self.today)
         self.bookingtype = BookingType30F()
         self.bookingtype.dailyslottimepattern_set.create(
             day=0, start_time='9:00', end_time='13:00')
         self.bookingtype.slottimesgeneration_set.create(
-            start_date='{:%Y-%m-%d}'.format(self.today),
-            end_date='{:%Y-%m-%d}'.format(self.today + timedelta(days=7)))  #
+            start_date='{0:%Y-%m-%d}'.format(self.today),
+            end_date='{0:%Y-%m-%d}'.format(self.today + timedelta(days=7)))  #
         self.bookingtype.slottimesgeneration_set.create(
-            start_date='{:%Y-%m-%d}'.format(start_10),
-            end_date='{:%Y-%m-%d}'.format(start_10 + timedelta(days=7)))
+            start_date='{0:%Y-%m-%d}'.format(start_10),
+            end_date='{0:%Y-%m-%d}'.format(start_10 + timedelta(days=7)))
         self.bookingtype.slottimesgeneration_set.create(
-            start_date='{:%Y-%m-%d}'.format(start_11),
-            end_date='{:%Y-%m-%d}'.format(start_11 + timedelta(days=7)))
-        # print(self.bookingtype.dailyslottimepattern_set.all())
-        # print(self.bookingtype.slottimesgeneration_set.all())
+            start_date='{0:%Y-%m-%d}'.format(start_11),
+            end_date='{0:%Y-%m-%d}'.format(start_11 + timedelta(days=7)))
         for dstp in self.bookingtype.slottimesgeneration_set.all():
             dstp.create_slot_times()
-        # print(self.bookingtype.slottime_set.all())
-        # print(timezone.datetime.today())
-        # with patch('functional_tests.test_views.timezone') as mock_tz:
-        #     print(mock_tz.datetime.today())
-        # print(timezone.datetime.today())
 
+    @skip
     @patch('nowait.views.timezone.now')
     def test_view(self, mock_now):
         mock_now.return_value = self.today
