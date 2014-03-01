@@ -245,7 +245,7 @@ INSTALLED_APPS = (
     "mezzanine.core",
     "mezzanine.generic",
     "mezzanine.pages",
-    #"mezzanine.accounts",
+    "mezzanine.accounts",
     # "django_pdb",
     "crispy_forms",
     # "functional_tests",
