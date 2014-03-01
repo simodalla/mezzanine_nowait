@@ -7,7 +7,7 @@ from .. import models
 from ..defaults import (NOWAIT_ROOT_SLUG, NOWAIT_GROUP_ADMINS,
                         NOWAIT_GROUP_OPERATORS)
 
-DOMAIN = 'comune.zolapredosa.bo.it'
+DOMAIN = 'example.com'
 
 
 class NowaitGOperatorsF(factory.DjangoModelFactory):
