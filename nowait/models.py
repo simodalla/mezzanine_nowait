@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+from smtplib import SMTPException
+
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.urlresolvers import reverse
@@ -12,6 +14,7 @@ from django.utils.timezone import (datetime, timedelta, make_aware,
 
 from mezzanine.core.fields import RichTextField
 from mezzanine.pages.models import Displayable, Link
+from mezzanine.utils.email import send_mail_template
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusField
@@ -109,6 +112,9 @@ class BookingType(Displayable):
             if old_link:
                 old_link.delete()
         return link, created
+
+    def get_notification_email(self):
+        return []
 
 
 @python_2_unicode_compatible
@@ -252,8 +258,8 @@ class SlotTime(TimeStampedModel):
 
 @python_2_unicode_compatible
 class Booking(TimeStampedModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'),
-                             blank=True, null=True)
+    booker = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               verbose_name=_('booker'), blank=True, null=True)
     slottime = models.OneToOneField(SlotTime, verbose_name=_('slot time'),
                                     blank=True, null=True)
     notes = models.TextField(
@@ -271,3 +277,24 @@ class Booking(TimeStampedModel):
 
     def __str__(self):
         return '%s n.%s' % (self._meta.verbose_name, self.pk)
+
+    def get_success_message_on_creation(self):
+        message = (
+            _('Your booking for "%(booking_type)s" is succesfully created with'
+              ' id: <b>%(pk)s</b>') % {
+                'booking_type': self.slottime.booking_type.title,
+                'pk': self.pk})
+        return message
+
+    def send_emails_on_creation(self):
+        for template, addr_to in [
+            ('booking_created_booker', self.user.email),
+            ('booking_created_operators',
+             self.slottime.booking_type.get_operator_emails())]:
+            try:
+                send_mail_template(
+                    'bookme/email/{}'.format(template), settings.SERVER_EMAIL,
+                    addr_to, context={'booking': self,
+                                      'request': self.request})
+            except SMTPException:
+                pass
