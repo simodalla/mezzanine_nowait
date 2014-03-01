@@ -29,11 +29,14 @@ lint:
 test:
 	python project_template/manage.py test nowait
 
-test-functionals:
+test-ft:
 	python project_template/manage.py test functional_tests
 
 test-tox:
 	tox
+
+test-tox-ft:
+	tox -e py26-django16-ft,py27-django16-ft,py33-django16-ft
 
 coverage-console:
 	coverage run --source nowait --omit=nowait/migrations/*,*/tests/factories.py project_template/manage.py test nowait

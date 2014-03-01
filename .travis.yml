@@ -29,7 +29,7 @@ install:
 script:
 #  - make lint
   - coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
-  - make test-functionals
+  - make test-ft
 
 # report coverage to coveralls.io
 after_success: coveralls
