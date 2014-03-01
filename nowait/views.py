@@ -64,7 +64,7 @@ class SlottimeSelectView(PageContextTitleMixin, TemplateView):
             qs = slottimes.filter(start__month=month, start__year=year)
             if len(qs) > 0:
                 context['slottimes'].append(
-                    ('{:%B}'.format(qs[0].start), year, qs))
+                    ('{0:%B}'.format(qs[0].start), year, qs))
         return context
 
 
