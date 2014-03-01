@@ -89,5 +89,5 @@ class FunctionalTest(LiveServerTestCase):
             return True
         return False
 
-    # def admin_login(self, username, password, url):
-    #     self.login(username, password, '/admin/login/')
+    def get_left_panel_tree(self):
+        return self.browser.find_element_by_id('left_panel_tree')
