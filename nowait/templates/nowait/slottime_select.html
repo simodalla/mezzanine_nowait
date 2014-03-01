@@ -37,7 +37,7 @@
     </ul>
     <div class="tab-content">
     {% for month, year, slottimes_for_month in slottimes %}
-        <div class="row text-center tab-pane fade{% if forloop.first %} in active{% endif %}" id="{% trans month %}">
+        <div class="row text-center tab-pane fade{% if forloop.first %} in active{% endif %}" id="{% trans month|lower %}">
         {% for slottime in slottimes_for_month %}
             <div class="col-sm-6 col-md-4">
                 <a href="{% url 'nowait:booking_add' slottime.pk %}"
