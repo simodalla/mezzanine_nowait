@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import sys
+import time
 
 from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
@@ -26,31 +27,30 @@ class FunctionalTest(LiveServerTestCase):
     def setUpClass(cls):
         cls.display = None
         try:
-            display = Display(visible=0, size=(800, 600))
+            display = Display(visible=0, size=(1024, 768))
             display.start()
-            print(display)
         except:
-            print("NO DISPLAY")
+            pass
         for arg in sys.argv:
             if 'liveserver' in arg:
                 cls.server_url = 'http://' + arg.split('=')[1]
                 return
+        cls.browser = webdriver.Firefox()
+        cls.browser.implicitly_wait(5)
         LiveServerTestCase.setUpClass()
         cls.server_url = cls.live_server_url
 
     @classmethod
     def tearDownClass(cls):
+        cls.browser.quit()
         if cls.display:
             cls.display.stop()
         if cls.server_url == cls.live_server_url:
             LiveServerTestCase.tearDownClass()
 
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(5)
-
     def tearDown(self):
-        self.browser.quit()
+        if self.display:
+            time.sleep(1)
 
     def get_url(self, url, args=None, kwargs=None):
         if url.startswith('/'):
