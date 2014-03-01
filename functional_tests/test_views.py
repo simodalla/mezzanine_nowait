@@ -86,6 +86,3 @@ class SlottimeSelectViewTest(FunctionalTest):
                     month=('{0:%B}'.format(start_date)).lower()))
             thumbs = tab_pane.find_elements_by_css_selector('a.thumbnail')
             self.assertEqual(len(thumbs), len(slottimes))
-
-
-
