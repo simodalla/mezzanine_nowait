@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from datetime import date, timedelta
-from unittest import skip
 try:
     from unittest.mock import patch
 except ImportError:
@@ -60,30 +59,33 @@ class SlottimeSelectViewTest(FunctionalTest):
         self.admin = AdminF()
         self.create_pre_authenticated_session(self.admin)
         # 2013-9-9 is a Monday
-        self.today = date(2013, 9, 9) - timedelta(days=2)
-        start_10 = date(2013, 10, 7)
-        start_11 = date(2013, 11, 4)
-        print("TODAY:", self.today)
+        start = date(2013, 9, 9)
+        self.today = start - timedelta(days=2)
+        self.start_dates = [start, date(2013, 10, 7), date(2013, 11, 4)]
         self.bookingtype = BookingType30F()
         self.bookingtype.dailyslottimepattern_set.create(
             day=0, start_time='9:00', end_time='13:00')
-        self.bookingtype.slottimesgeneration_set.create(
-            start_date='{0:%Y-%m-%d}'.format(self.today),
-            end_date='{0:%Y-%m-%d}'.format(self.today + timedelta(days=7)))  #
-        self.bookingtype.slottimesgeneration_set.create(
-            start_date='{0:%Y-%m-%d}'.format(start_10),
-            end_date='{0:%Y-%m-%d}'.format(start_10 + timedelta(days=7)))
-        self.bookingtype.slottimesgeneration_set.create(
-            start_date='{0:%Y-%m-%d}'.format(start_11),
-            end_date='{0:%Y-%m-%d}'.format(start_11 + timedelta(days=7)))
+        for start_date in self.start_dates:
+            self.bookingtype.slottimesgeneration_set.create(
+                start_date='{0:%Y-%m-%d}'.format(start_date),
+                end_date='{0:%Y-%m-%d}'.format(start_date + timedelta(days=7)))
         for dstp in self.bookingtype.slottimesgeneration_set.all():
             dstp.create_slot_times()
 
-    @skip
     @patch('nowait.views.timezone.now')
-    def test_view(self, mock_now):
+    def test_visible_slottimes(self, mock_now):
         mock_now.return_value = self.today
         self.browser.get(self.get_url(
             reverse('nowait:slottime_select',
                     kwargs={'slug': self.bookingtype.slug})))
-        # import ipdb; ipdb.set_trace()
+        for start_date in self.start_dates:
+            slottimes = self.bookingtype.slottime_set.filter(
+                start__range=(start_date, start_date + timedelta(days=8)))
+            tab_pane = self.browser.find_element_by_css_selector(
+                '.tab-content #{month}'.format(
+                    month=('{0:%B}'.format(start_date)).lower()))
+            thumbs = tab_pane.find_elements_by_css_selector('a.thumbnail')
+            self.assertEqual(len(thumbs), len(slottimes))
+
+
+
