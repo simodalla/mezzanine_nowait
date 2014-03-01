@@ -1,6 +1,11 @@
 {% extends 'pages/page.html' %}
 {% load i18n mezzanine_tags %}
 
+{% block breadcrumb_menu %}
+    {{ block.super }}
+    <li class="active">{{ object.title|capfirst }}</li>
+{% endblock %}
+
 {% block title %}
 <div id="bookingtype_title" class="jumbotron">
     <h1>{{ object.title }}</h1>
