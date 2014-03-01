@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core import exceptions
 from django.db import transaction
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -17,7 +18,7 @@ from mezzanine.conf import settings
 from braces.views import LoginRequiredMixin
 from mezzanine.utils.email import send_mail_template
 
-from .utils import PageContextTitleMixin
+from .utils import PageContextTitleMixin, get_root_app_page
 from .models import BookingType, SlotTime
 from .forms import BookingCreateForm
 
@@ -70,18 +71,20 @@ class SlottimeSelectView(PageContextTitleMixin, TemplateView):
 
 class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
     form_class = BookingCreateForm
-    page_title = 'Conferma Prenotazione'
-    template_name = 'nowait/booking_create.html'
+    http_method_names = ['get', 'post']
+    page_title = _('Confirmation of booking')
     slottime = None
+    template_name = 'nowait/booking_create.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
             self.slottime = SlotTime.objects.get(
                 pk=kwargs['slottime_pk'])
+            return super(BookingCreateView, self).dispatch(
+                request, *args, **kwargs)
         except SlotTime.DoesNotExist:
-            return redirect('bookme:slottime_select')
-        return super(BookingCreateView, self).dispatch(request, *args,
-                                                       **kwargs)
+            return redirect('/{page.slug}/'.format(
+                page=get_root_app_page(SlotTime._meta.app_label)))
 
     def get_context_data(self, **kwargs):
         context = super(BookingCreateView, self).get_context_data(**kwargs)
@@ -92,7 +95,8 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         return {'slottime': self.slottime.pk}
 
     def get_success_url(self):
-        return reverse('nowait:booking_list')
+        # return reverse('nowait:booking_list')
+        return '/'
 
     @transaction.commit_manually
     def form_valid(self, form):
@@ -104,31 +108,33 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
             booking.save()
             booking.slottime.status = SlotTime.STATUS.taken
             booking.slottime.save()
-            # if 'djcelery' in settings.INSTALLED_APPS:
-            #     from .tasks import create_calendar_event
-            #     create_calendar_event.delay(booking)
-            messages.success(
-                self.request,
-                _('Your booking for "%(booking_type)s" is succesfully created'
-                  ' with id: %(pk)s') %
-                {'booking_type': booking.slottime.booking_type.name,
-                 'pk': '<b>{}</b>'.format(booking.pk)},
-                extra_tags='safe')
-        except:
+    #         # if 'djcelery' in settings.INSTALLED_APPS:
+    #         #     from .tasks import create_calendar_event
+    #         #     create_calendar_event.delay(booking)
+    #         messages.success(
+    #             self.request,
+    #             _('Your booking for "%(booking_type)s" is succesfully created'
+    #               ' with id: %(pk)s') %
+    #             {'booking_type': booking.slottime.booking_type.name,
+    #              'pk': '<b>{}</b>'.format(booking.pk)},
+    #             extra_tags='safe')
+        except Exception:
             transaction.rollback()
             # TODO: fare errore e mandare mail con eccezzione
         else:
             transaction.commit()
-            for template, addr_to in [
-                ('booking_created', booking.user.email),
-                ('booking_created_operator',
-                 booking.slottime.booking_type.get_operator_emails())]:
-                send_mail_template('bookme/email/{}'.format(template),
-                                   settings.SERVER_EMAIL,
-                                   addr_to,
-                                   context={'booking': booking,
-                                            'request': self.request})
-        return result
-
-    def form_invalid(self, form):
-        return super(BookingCreateView, self).form_invalid(form)
+            messages.error(self.request, 'msg slkhjgl k ')
+    #         for template, addr_to in [
+    #             ('booking_created', booking.user.email),
+    #             ('booking_created_operator',
+    #              booking.slottime.booking_type.get_operator_emails())]:
+    #             send_mail_template('bookme/email/{}'.format(template),
+    #                                settings.SERVER_EMAIL,
+    #                                addr_to,
+    #                                context={'booking': booking,
+    #                                         'request': self.request})
+        finally:
+            return result
+    #
+    # def form_invalid(self, form):
+    #     return super(BookingCreateView, self).form_invalid(form)

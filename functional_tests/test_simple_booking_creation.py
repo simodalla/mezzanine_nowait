@@ -42,6 +42,8 @@ class UserCreateBookingTest(FunctionalTest):
         left_panel_tree = self.get_left_panel_tree()
         left_panel_tree.find_element_by_link_text(self.root.title).click()
         # user click on link of choosen booking type from left panel tree
+        import ipdb
+        ipdb.set_trace()
         left_panel_tree = self.get_left_panel_tree()
         left_panel_tree.find_element_by_link_text(
             self.bookingtype.title).click()
@@ -59,8 +61,4 @@ class UserCreateBookingTest(FunctionalTest):
             self.user.username)
         self.browser.find_element_by_css_selector(
             '.form-actions input').click()
-        print(slottime_selected_id)
-
-        import ipdb; ipdb.set_trace()
-
-
+        # print(slottime_selected_id)

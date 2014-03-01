@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.messages import SUCCESS
 from django.core.exceptions import ImproperlyConfigured
 from django.forms import ModelMultipleChoiceField
 
@@ -29,6 +30,17 @@ class PageContextTitleMixin(object):
         context = super(PageContextTitleMixin, self).get_context_data(**kwargs)
         context.update({"title": self.get_page_title()})
         return context
+
+
+class RequestMessagesTestMixin(object):
+
+    def assert_in_messages(self, response, msg, level=SUCCESS, verbose=False):
+        if not 'messages' in response.context:
+            self.fail('"messages" not in response.context')
+        messages = [(m.message, m.tags) for m in response.context['messages']]
+        if verbose:
+            print("messages in response: {}".format(messages))
+        self.assertIn((msg, level), messages)
 
 
 class UserChoiceField(ModelMultipleChoiceField):

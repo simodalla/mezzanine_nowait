@@ -3,6 +3,7 @@
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import ModelMultipleChoiceField
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from mezzanine.utils.models import get_user_model
@@ -40,7 +41,7 @@ class BookingCreateForm(forms.ModelForm):
                      ' {{ slottime.start|date:"H:i" }} alle'
                      ' {{ slottime.end|date:"H:i" }}</strong>'
                      '&nbsp;&nbsp;&nbsp;<a href="'
-                     '{% url \'bookme:slottime_select\''
+                     '{% url \'nowait:slottime_select\''
                      ' slottime.booking_type.slug %}" class="btn btn-small'
                      ' btn-inverse">Cambiala &raquo;</a></div>'),
                 'slottime',
