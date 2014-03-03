@@ -7,6 +7,10 @@ from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import models
+try:
+    from django.db.transaction import atomic
+except ImportError:
+    from django.db.transaction import commit_on_success as atomic
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import (datetime, timedelta, make_aware,
@@ -278,6 +282,18 @@ class Booking(TimeStampedModel):
     def __str__(self):
         return '%s n.%s' % (self._meta.verbose_name, self.pk)
 
+    def save(self, *args, **kwargs):
+        print("CALL SAVE")
+        return super(Booking, self).save(*args, **kwargs)
+
+    @atomic
+    def save_with_slottime(self, slottime, request):
+        self.slottime = slottime
+        self.user = request.user
+        self.save()
+        self.slottime.status = SlotTime.STATUS.taken
+        self.slottime.save()
+
     def get_success_message_on_creation(self):
         message = (
             _('Your booking for "%(booking_type)s" is succesfully created with'
@@ -290,7 +306,7 @@ class Booking(TimeStampedModel):
         for template, addr_to in [
             ('booking_created_booker', self.user.email),
             ('booking_created_operators',
-             self.slottime.booking_type.get_operator_emails())]:
+             self.slottime.booking_type.get_notification_email())]:
             try:
                 send_mail_template(
                     'bookme/email/{}'.format(template), settings.SERVER_EMAIL,
