@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+try:
+    from unittest.mock import patch, PropertyMock
+except ImportError:
+    from mock import patch, PropertyMock
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now, timedelta
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from .factories import BookingType30F, UserF, RootNowaitPageF
 from ..defaults import NOWAIT_ROOT_SLUG
@@ -126,4 +131,43 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         booking = Booking.objects.get(slottime=self.slottime)
         self.assert_in_messages(
             response, booking.get_success_message_on_creation(),
-            level=messages.SUCCESS, verbose=True)
+            level=messages.SUCCESS)
+
+    @patch('nowait.views.transaction.rollback')
+    @patch('nowait.views.SlotTime.save')
+    def test_in_form_valid_on_save_booking_or_slottime_occurs_an_excption(
+            self, mock_save, mock_rollback):
+        mock_save.side_effect = Exception('Boom!')
+        response = self.client.post(self.url, self.data)
+        mock_rollback.assert_called_once_with()
+        print(mock_save.mock_calls)
+
+
+class BookingCreateViewFormValidTest(TransactionTestCase):
+    def setUp(self):
+        start = now()
+        self.root = RootNowaitPageF()
+        self.booking_type = BookingType30F()
+        self.slottime = SlotTime.objects.create(
+            booking_type=self.booking_type,
+            start=start,
+            end=start + timedelta(minutes=self.booking_type.slot_length))
+        self.booker = UserF()
+        self.url = reverse('nowait:booking_create',
+                           kwargs={'slottime_pk': self.slottime.pk})
+        self.client.login(username=self.booker.username,
+                          password=self.booker.username)
+        self.data = {'slottime': self.slottime.pk,
+                     'notes': 'notes on booking',
+                     'telephone': '+399900990'}
+
+
+    # @patch('nowait.views.transaction.rollback')
+    # @patch('nowait.views.SlotTime.save')
+    def test_in_form_valid_on_save_booking_or_slottime_occurs_an_excption(
+            self):#, mock_rollback):
+        # mock_save.side_effect = Exception('Boom!')
+        response = self.client.post(self.url, self.data)
+        # mock_rollback.assert_called_once_with()
+        # print(mock_save.mock_calls)
+        print(Booking.objects.all())

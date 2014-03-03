@@ -286,7 +286,7 @@ class Booking(TimeStampedModel):
                 'pk': self.pk})
         return message
 
-    def send_emails_on_creation(self):
+    def send_emails_on_creation(self, request):
         for template, addr_to in [
             ('booking_created_booker', self.user.email),
             ('booking_created_operators',
@@ -295,6 +295,6 @@ class Booking(TimeStampedModel):
                 send_mail_template(
                     'bookme/email/{}'.format(template), settings.SERVER_EMAIL,
                     addr_to, context={'booking': self,
-                                      'request': self.request})
+                                      'request': request})
             except SMTPException:
                 pass

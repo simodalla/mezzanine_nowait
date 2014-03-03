@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from datetime import datetime
 
+from django import get_version
 from django.contrib import messages
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.core import exceptions
@@ -16,7 +17,6 @@ from django.views.generic.edit import FormView
 from mezzanine.conf import settings
 
 from braces.views import LoginRequiredMixin
-from mezzanine.utils.email import send_mail_template
 
 from .utils import PageContextTitleMixin, get_root_app_page
 from .models import BookingType, SlotTime
@@ -101,7 +101,9 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
     @transaction.commit_manually
     def form_valid(self, form):
         result = super(BookingCreateView, self).form_valid(form)
+
         try:
+            if
             booking = form.instance
             booking.slottime = self.slottime
             booking.user = self.request.user
@@ -111,28 +113,18 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
     #         # if 'djcelery' in settings.INSTALLED_APPS:
     #         #     from .tasks import create_calendar_event
     #         #     create_calendar_event.delay(booking)
-    #         messages.success(
-    #             self.request,
-    #             _('Your booking for "%(booking_type)s" is succesfully created'
-    #               ' with id: %(pk)s') %
-    #             {'booking_type': booking.slottime.booking_type.name,
-    #              'pk': '<b>{}</b>'.format(booking.pk)},
-    #             extra_tags='safe')
-        except Exception:
+        except Exception as e:
             transaction.rollback()
+            # import ipdb
+            # ipdb.set_trace()
+            print("**************")
             # TODO: fare errore e mandare mail con eccezzione
         else:
             transaction.commit()
-            messages.error(self.request, 'msg slkhjgl k ')
-    #         for template, addr_to in [
-    #             ('booking_created', booking.user.email),
-    #             ('booking_created_operator',
-    #              booking.slottime.booking_type.get_operator_emails())]:
-    #             send_mail_template('bookme/email/{}'.format(template),
-    #                                settings.SERVER_EMAIL,
-    #                                addr_to,
-    #                                context={'booking': booking,
-    #                                         'request': self.request})
+            messages.success(self.request,
+                             booking.get_success_message_on_creation(),
+                             extra_tags='safe')
+            booking.send_emails_on_creation(self.request)
         finally:
             return result
     #

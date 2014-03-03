@@ -37,10 +37,12 @@ class RequestMessagesTestMixin(object):
     def assert_in_messages(self, response, msg, level=SUCCESS, verbose=False):
         if not 'messages' in response.context:
             self.fail('"messages" not in response.context')
-        messages = [(m.message, m.tags) for m in response.context['messages']]
+
+        messages = [(m.message, m.level) for m in response.context['messages']]
         if verbose:
             print("messages in response: {}".format(messages))
         self.assertIn((msg, level), messages)
+        return messages
 
 
 class UserChoiceField(ModelMultipleChoiceField):
