@@ -42,8 +42,6 @@ class UserCreateBookingTest(FunctionalTest):
         left_panel_tree = self.get_left_panel_tree()
         left_panel_tree.find_element_by_link_text(self.root.title).click()
         # user click on link of choosen booking type from left panel tree
-        import ipdb
-        ipdb.set_trace()
         left_panel_tree = self.get_left_panel_tree()
         left_panel_tree.find_element_by_link_text(
             self.bookingtype.title).click()
