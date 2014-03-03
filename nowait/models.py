@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+import logging
 from smtplib import SMTPException
 
 from django.conf import settings
@@ -263,9 +264,8 @@ class SlotTime(TimeStampedModel):
 @python_2_unicode_compatible
 class Booking(TimeStampedModel):
     booker = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               verbose_name=_('booker'), blank=True, null=True)
-    slottime = models.OneToOneField(SlotTime, verbose_name=_('slot time'),
-                                    blank=True, null=True)
+                               verbose_name=_('booker'))
+    slottime = models.OneToOneField(SlotTime, verbose_name=_('slot time'))
     notes = models.TextField(
         _('notes'), blank=True,
         help_text=_('add notes to communicate to the  person in charge of '
@@ -285,28 +285,32 @@ class Booking(TimeStampedModel):
     @atomic
     def save_and_take_slottime(self, slottime, request):
         self.slottime = slottime
-        self.user = request.user
+        self.booker = request.user
         self.save()
         self.slottime.status = SlotTime.STATUS.taken
         self.slottime.save()
 
-    def get_success_message_on_creation(self):
+    @property
+    def success_message_on_creation(self):
+        title = self.slottime.booking_type.title
         message = (
             _('Your booking for "%(booking_type)s" is succesfully created with'
-              ' id: <b>%(pk)s</b>') % {
-                'booking_type': self.slottime.booking_type.title,
-                'pk': self.pk})
+              ' id: <b>%(pk)s</b>') % {'booking_type': title, 'pk': self.pk})
         return message
 
     def send_emails_on_creation(self, request):
         for template, addr_to in [
-            ('booking_created_booker', self.user.email),
+            ('booking_created_booker', self.booker.email),
             ('booking_created_operators',
              self.slottime.booking_type.get_notification_email())]:
             try:
                 send_mail_template(
-                    'bookme/email/{}'.format(template), settings.SERVER_EMAIL,
+                    'nowait/email/{}'.format(template), settings.SERVER_EMAIL,
                     addr_to, context={'booking': self,
                                       'request': request})
-            except SMTPException:
-                pass
+            except SMTPException as e:
+                logger = logging.getLogger('django.request')
+                logger.error(
+                    'Internal Server Error: %s', request.path,
+                    exc_info=str(e),
+                    extra={'status_code': 500, 'request': request})

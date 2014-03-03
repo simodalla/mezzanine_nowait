@@ -6,7 +6,6 @@ try:
 except ImportError:
     from mock import Mock, patch, ANY
 
-from django.core import mail
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now, timedelta
 from django.test import TestCase, RequestFactory
