@@ -98,7 +98,6 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
 
     def form_valid(self, form):
         result = super(BookingCreateView, self).form_valid(form)
-
         booking = form.instance
         try:
             booking.save_with_slottime(self.slottime, self.request)
@@ -107,11 +106,10 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
                              ' later.')
             messages.error(self.request, msg_on_error)
             logger = logging.getLogger('django.request')
-            logger.error('Internal Server Error: %s', self.request.path,
-                         exc_info=str(e),
-                         extra={
-                             'status_code': 500,
-                             'request': self.request})
+            logger.error(
+                'Internal Server Error: %s', self.request.path, exc_info=str(e),
+                extra={'status_code': 500, 'request': self.request})
+            return redirect('.')
         else:
             messages.success(self.request,
                              booking.get_success_message_on_creation(),

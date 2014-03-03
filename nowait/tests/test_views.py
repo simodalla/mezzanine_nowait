@@ -115,7 +115,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         Test that call save_with_slottime on Booking object on form_valid
         """
         factory = RequestFactory()
-        request = factory.post(self.url, self.data, follow=True)
+        request = factory.post(self.url, self.data)
         request.user = self.booker
         mock_construct_instance.return_value = self.mock_instance
         BookingCreateView.as_view()(
@@ -131,7 +131,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         Test that call message.success on form_valid
         """
         factory = RequestFactory()
-        request = factory.post(self.url, self.data, follow=True)
+        request = factory.post(self.url, self.data)
         request.user = self.booker
         mock_construct_instance.return_value = self.mock_instance
         BookingCreateView.as_view()(
@@ -148,7 +148,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         Test that call message.success on form_valid
         """
         factory = RequestFactory()
-        request = factory.post(self.url, self.data, follow=True)
+        request = factory.post(self.url, self.data)
         request.user = self.booker
         mock_construct_instance.return_value = self.mock_instance
         BookingCreateView.as_view()(
@@ -166,29 +166,50 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         """
         self.mock_instance.save_with_slottime.side_effect = Exception('Boom!')
         factory = RequestFactory()
-        request = factory.post(self.url, self.data, follow=True)
+        request = factory.post(self.url, self.data)
         request.user = self.booker
         mock_construct_instance.return_value = self.mock_instance
         BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
         mock_messages.error.assert_called_once_with(request, ANY)
 
+    @patch('nowait.views.logging.getLogger')
     @patch('nowait.views.messages')
     @patch('django.forms.models.construct_instance', spec=True)
     def test_in_on_form_occurs_exception_and_logging_is_called(
+            self, mock_construct_instance, mock_messages, mock_get_logger):
+        """
+        Test that logger 'django.request' is called if
+        booking.save_with_slottime raise an exception.
+        """
+        exception = Exception('Boom!')
+        self.mock_instance.save_with_slottime.side_effect = exception
+        factory = RequestFactory()
+        mock_logger = Mock()
+        mock_get_logger.return_value = mock_logger
+        request = factory.post(self.url, self.data)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        mock_get_logger.assert_called_once_with('django.request')
+        mock_logger.error.assert_called_once_with(
+            ANY, request.path, exc_info=str(exception),
+            extra={'status_code': 500, 'request': request})
+
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_in_on_form_occurs_exception_and_redirect_in_same_path(
             self, mock_construct_instance, mock_messages):
         """
         Test that message.error is called if booking.save_with_slottime
         raise an exception.
         """
-
-        self.mock_instance.save_with_slottime.side_effect = Exception(
-            'Boom!')
+        self.mock_instance.save_with_slottime.side_effect = Exception('Boom!')
         factory = RequestFactory()
-        request = factory.post(self.url, self.data, follow=True)
+        request = factory.post(self.url, self.data)
         request.user = self.booker
         mock_construct_instance.return_value = self.mock_instance
-        BookingCreateView.as_view()(
+        response = BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
-        mock_messages.error.assert_called_once_with(request, ANY)
-        # print(mail.outbox[0])
+        self.assertEqual(response.url, '.')
