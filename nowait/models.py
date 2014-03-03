@@ -200,13 +200,7 @@ class FreeSlotTimeManager(models.Manager):
         return super(FreeSlotTimeManager, self).get_query_set().filter(
             status=SlotTime.STATUS.free)
 
-    def get_for_booking(self, booking_type, start=None, days_start=1,
-                        days_end=95):
-        if not start:
-            _now = now()
-            start = make_aware(
-                datetime(_now.year, _now.month, _now.day, 0, 1),
-                get_current_timezone())
+    def get_for_booking(self, booking_type, start, days_start=1, days_end=95):
         qs = self.get_query_set()
         return qs.filter(
             booking_type=booking_type,
