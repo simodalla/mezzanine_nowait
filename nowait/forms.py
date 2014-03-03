@@ -18,7 +18,7 @@ from .utils import UserChoiceField
 class BookingCreateForm(forms.ModelForm):
     class Meta:
         model = Booking
-        exclude = ('user',)
+        exclude = ('booker',)
 
     slottime = forms.CharField(widget=forms.HiddenInput, required=True)
 
