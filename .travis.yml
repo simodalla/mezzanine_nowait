@@ -30,7 +30,7 @@ before_script:
 # command to run tests using coverage
 script:
   - coverage run --source nowait --omit=nowait/migrations/*,nowait/tests/factories.py project_template/manage.py test nowait
-  - make test-ft
+#  - make test-ft
 
 # report coverage to coveralls.io
 after_success: coveralls
