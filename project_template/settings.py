@@ -88,7 +88,7 @@ USE_SOUTH = True
 # In the format (('Full Name', 'email@example.com'),
 #                ('Full Name', 'anotheremail@example.com'))
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('administrator', 'administrator@example.com'),
 )
 MANAGERS = ADMINS
 
@@ -224,6 +224,57 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
+
+###########
+# LOGGING #
+###########
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+        },
+        'null': {
+            'class': 'django.utils.log.NullHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            # 'email_backend': 'django.core.mail.backends.console.'
+            #                  'EmailBackend',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+        },
+    }
+}
 
 
 ################

@@ -36,6 +36,7 @@ DATABASES = {
         "HOST": "localhost",
         # Set to empty string for default. Not used with sqlite3.
         "PORT": "",
+        "ATOMIC_REQUESTS": True
     }
 }
 
@@ -45,4 +46,3 @@ if int(get_version().split('.')[1]) <= 5:
     TEST_DISCOVER_PATTERN = "test_*.py"
 else:
     TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
