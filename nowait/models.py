@@ -15,7 +15,7 @@ except ImportError:
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import (datetime, timedelta, make_aware,
-                                   get_current_timezone, now)
+                                   get_current_timezone)
 
 from mezzanine.core.fields import RichTextField
 from mezzanine.pages.models import Displayable, Link

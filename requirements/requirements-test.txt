@@ -10,3 +10,4 @@ factory-boy
 django-pdb
 selenium
 pyvirtualdisplay
+ipdb

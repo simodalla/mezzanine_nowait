@@ -106,8 +106,9 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
             messages.error(self.request, msg_on_error)
             logger = logging.getLogger('django.request')
             logger.error(
-                'Internal Server Error: %s', self.request.path, exc_info=str(e),
-                extra={'status_code': 500, 'request': self.request})
+                'Internal Server Error: %s', self.request.path,
+                exc_info=str(e), extra={'status_code': 500,
+                                        'request': self.request})
             return redirect('.')
         else:
             messages.success(self.request,
