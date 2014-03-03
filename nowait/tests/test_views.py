@@ -163,7 +163,8 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         Test that message.error is called if booking.save_and_take_slottime
         raise an exception.
         """
-        self.mock_instance.save_and_take_slottime.side_effect = Exception('Boom!')
+        self.mock_instance.save_and_take_slottime.side_effect = Exception(
+            'Boom!')
         factory = RequestFactory()
         request = factory.post(self.url, self.data)
         request.user = self.booker
