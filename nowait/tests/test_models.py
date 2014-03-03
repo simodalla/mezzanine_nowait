@@ -9,7 +9,7 @@ except ImportError:
     from mock import Mock
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.utils.timezone import (timedelta, make_aware, get_current_timezone,
                                    now)
 
@@ -85,6 +85,10 @@ class BookingTypeModelTest(TestCase):
         self.assertEqual(link.slug, obj.get_absolute_url())
         self.assertEqual(link.title, obj.title)
         old_wrong_link.delete.assert_called_once_with()
+
+
+class BookingTypeModelWithTransTest(TransactionTestCase):
+    pass
 
 
 class DailySlotTimePatternModelTest(TestCase):

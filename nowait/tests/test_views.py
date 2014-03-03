@@ -109,10 +109,10 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
 
     @patch('nowait.views.messages')
     @patch('django.forms.models.construct_instance', spec=True)
-    def test_on_form_valid_call_method_save_with_slottime(
+    def test_on_form_valid_call_method_save_and_take_slottime(
             self, mock_construct_instance, mock_messages):
         """
-        Test that call save_with_slottime on Booking object on form_valid
+        Test that call save_and_take_slottime on Booking object on form_valid
         """
         factory = RequestFactory()
         request = factory.post(self.url, self.data)
@@ -120,7 +120,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         mock_construct_instance.return_value = self.mock_instance
         BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
-        self.mock_instance.save_with_slottime.assert_called_once_with(
+        self.mock_instance.save_and_take_slottime.assert_called_once_with(
             self.slottime, request)
 
     @patch('nowait.views.messages')
@@ -161,10 +161,10 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
     def test_in_on_form_occurs_exception_and_message_error_is_called(
             self, mock_construct_instance, mock_messages):
         """
-        Test that message.error is called if booking.save_with_slottime
+        Test that message.error is called if booking.save_and_take_slottime
         raise an exception.
         """
-        self.mock_instance.save_with_slottime.side_effect = Exception('Boom!')
+        self.mock_instance.save_and_take_slottime.side_effect = Exception('Boom!')
         factory = RequestFactory()
         request = factory.post(self.url, self.data)
         request.user = self.booker
@@ -180,10 +180,10 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
             self, mock_construct_instance, mock_messages, mock_get_logger):
         """
         Test that logger 'django.request' is called if
-        booking.save_with_slottime raise an exception.
+        booking.save_and_take_slottime raise an exception.
         """
         exception = Exception('Boom!')
-        self.mock_instance.save_with_slottime.side_effect = exception
+        self.mock_instance.save_and_take_slottime.side_effect = exception
         factory = RequestFactory()
         mock_logger = Mock()
         mock_get_logger.return_value = mock_logger
@@ -202,10 +202,10 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
     def test_in_on_form_occurs_exception_and_redirect_in_same_path(
             self, mock_construct_instance, mock_messages):
         """
-        Test that message.error is called if booking.save_with_slottime
+        Test that message.error is called if booking.save_and_take_slottime
         raise an exception.
         """
-        self.mock_instance.save_with_slottime.side_effect = Exception('Boom!')
+        self.mock_instance.save_and_take_slottime.side_effect = Exception('Boom!')
         factory = RequestFactory()
         request = factory.post(self.url, self.data)
         request.user = self.booker

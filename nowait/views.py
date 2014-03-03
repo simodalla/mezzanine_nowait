@@ -100,7 +100,7 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         result = super(BookingCreateView, self).form_valid(form)
         booking = form.instance
         try:
-            booking.save_with_slottime(self.slottime, self.request)
+            booking.save_and_take_slottime(self.slottime, self.request)
         except Exception as e:
             msg_on_error = _('Sorry. An error is occured. Please try again'
                              ' later.')

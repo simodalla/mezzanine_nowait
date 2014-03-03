@@ -283,7 +283,7 @@ class Booking(TimeStampedModel):
         return '%s n.%s' % (self._meta.verbose_name, self.pk)
 
     @atomic
-    def save_with_slottime(self, slottime, request):
+    def save_and_take_slottime(self, slottime, request):
         self.slottime = slottime
         self.user = request.user
         self.save()
