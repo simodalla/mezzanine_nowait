@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+import logging
 from datetime import datetime
 
-from django import get_version
 from django.contrib import messages
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.core import exceptions
-from django.db import transaction
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -98,35 +96,25 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         # return reverse('nowait:booking_list')
         return '/'
 
-    @transaction.commit_manually
     def form_valid(self, form):
         result = super(BookingCreateView, self).form_valid(form)
 
+        booking = form.instance
         try:
-            if
-            booking = form.instance
-            booking.slottime = self.slottime
-            booking.user = self.request.user
-            booking.save()
-            booking.slottime.status = SlotTime.STATUS.taken
-            booking.slottime.save()
-    #         # if 'djcelery' in settings.INSTALLED_APPS:
-    #         #     from .tasks import create_calendar_event
-    #         #     create_calendar_event.delay(booking)
+            booking.save_with_slottime(self.slottime, self.request)
         except Exception as e:
-            transaction.rollback()
-            # import ipdb
-            # ipdb.set_trace()
-            print("**************")
-            # TODO: fare errore e mandare mail con eccezzione
+            msg_on_error = _('Sorry. An error is occured. Please try again'
+                             ' later.')
+            messages.error(self.request, msg_on_error)
+            logger = logging.getLogger('django.request')
+            logger.error('Internal Server Error: %s', self.request.path,
+                         exc_info=str(e),
+                         extra={
+                             'status_code': 500,
+                             'request': self.request})
         else:
-            transaction.commit()
             messages.success(self.request,
                              booking.get_success_message_on_creation(),
                              extra_tags='safe')
             booking.send_emails_on_creation(self.request)
-        finally:
-            return result
-    #
-    # def form_invalid(self, form):
-    #     return super(BookingCreateView, self).form_invalid(form)
+        return result

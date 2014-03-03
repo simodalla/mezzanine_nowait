@@ -2,19 +2,19 @@
 from __future__ import unicode_literals
 
 try:
-    from unittest.mock import patch, PropertyMock
+    from unittest.mock import Mock, patch, ANY
 except ImportError:
-    from mock import patch, PropertyMock
+    from mock import Mock, patch, ANY
 
-from django.contrib import messages
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now, timedelta
-from django.test import TestCase, TransactionTestCase
-
+from django.test import TestCase, RequestFactory
 from .factories import BookingType30F, UserF, RootNowaitPageF
 from ..defaults import NOWAIT_ROOT_SLUG
-from ..models import SlotTime, Booking
+from ..models import SlotTime
 from ..utils import RequestMessagesTestMixin
+from ..views import BookingCreateView
 
 
 class BookingTypeDetailViewTest(TestCase):
@@ -72,6 +72,11 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         self.data = {'slottime': self.slottime.pk,
                      'notes': 'notes on booking',
                      'telephone': '+399900990'}
+        self.mock_instance = Mock()
+        self.mock_instance._meta.fields = []
+
+    def tearDown(self):
+        self.mock_instance.reset_mock()
 
     def test_redirect_in_dispacth(self):
         """
@@ -102,72 +107,88 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         self.assertIn('slottime', form.initial)
         self.assertEqual(form.initial['slottime'], self.slottime.pk)
 
-    def test_on_form_valid_create_new_booking_with_data(self):
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_on_form_valid_call_method_save_with_slottime(
+            self, mock_construct_instance, mock_messages):
         """
-        Test valid creation of new booking object and correct setting of
-        slottime, notes, booker, telephone fields.
+        Test that call save_with_slottime on Booking object on form_valid
         """
-        self.client.post(self.url, self.data)
-        booking = Booking.objects.get(slottime=self.slottime)
-        booking.booker = self.booker
-        booking.notes = self.data['notes']
-        booking.telephone = self.data['telephone']
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data, follow=True)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        self.mock_instance.save_with_slottime.assert_called_once_with(
+            self.slottime, request)
 
-    def test_on_form_valid_set_slottime_to_taken_status(self):
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_on_form_valid_call_message_success(
+            self, mock_construct_instance, mock_messages):
         """
-        Test valid creation of new booking object and setting of status to
-        take of slottime relative to new booking created
+        Test that call message.success on form_valid
         """
-        self.client.post(self.url, self.data)
-        booking = Booking.objects.get(slottime=self.slottime)
-        self.assertEqual(booking.slottime.status, SlotTime.STATUS.taken)
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data, follow=True)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        mock_messages.success.assert_called_once_with(
+            request, self.mock_instance.get_success_message_on_creation(),
+            extra_tags='safe')
 
-    def test_on_form_valid_set_message_success(self):
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_on_form_valid_call_method_for_send_emais(
+            self, mock_construct_instance, mock_messages):
         """
-        Test valid creation of new booking object and setting of status to
-        take of slottime relative to new booking created
+        Test that call message.success on form_valid
         """
-        response = self.client.post(self.url, self.data, follow=True)
-        booking = Booking.objects.get(slottime=self.slottime)
-        self.assert_in_messages(
-            response, booking.get_success_message_on_creation(),
-            level=messages.SUCCESS)
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data, follow=True)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        self.mock_instance.send_emails_on_creation.assert_called_once_with(
+            request)
 
-    @patch('nowait.views.transaction.rollback')
-    @patch('nowait.views.SlotTime.save')
-    def test_in_form_valid_on_save_booking_or_slottime_occurs_an_excption(
-            self, mock_save, mock_rollback):
-        mock_save.side_effect = Exception('Boom!')
-        response = self.client.post(self.url, self.data)
-        mock_rollback.assert_called_once_with()
-        print(mock_save.mock_calls)
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_in_on_form_occurs_exception_and_message_error_is_called(
+            self, mock_construct_instance, mock_messages):
+        """
+        Test that message.error is called if booking.save_with_slottime
+        raise an exception.
+        """
+        self.mock_instance.save_with_slottime.side_effect = Exception('Boom!')
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data, follow=True)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        mock_messages.error.assert_called_once_with(request, ANY)
 
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_in_on_form_occurs_exception_and_logging_is_called(
+            self, mock_construct_instance, mock_messages):
+        """
+        Test that message.error is called if booking.save_with_slottime
+        raise an exception.
+        """
 
-class BookingCreateViewFormValidTest(TransactionTestCase):
-    def setUp(self):
-        start = now()
-        self.root = RootNowaitPageF()
-        self.booking_type = BookingType30F()
-        self.slottime = SlotTime.objects.create(
-            booking_type=self.booking_type,
-            start=start,
-            end=start + timedelta(minutes=self.booking_type.slot_length))
-        self.booker = UserF()
-        self.url = reverse('nowait:booking_create',
-                           kwargs={'slottime_pk': self.slottime.pk})
-        self.client.login(username=self.booker.username,
-                          password=self.booker.username)
-        self.data = {'slottime': self.slottime.pk,
-                     'notes': 'notes on booking',
-                     'telephone': '+399900990'}
-
-
-    # @patch('nowait.views.transaction.rollback')
-    # @patch('nowait.views.SlotTime.save')
-    def test_in_form_valid_on_save_booking_or_slottime_occurs_an_excption(
-            self):#, mock_rollback):
-        # mock_save.side_effect = Exception('Boom!')
-        response = self.client.post(self.url, self.data)
-        # mock_rollback.assert_called_once_with()
-        # print(mock_save.mock_calls)
-        print(Booking.objects.all())
+        self.mock_instance.save_with_slottime.side_effect = Exception(
+            'Boom!')
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data, follow=True)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+        mock_messages.error.assert_called_once_with(request, ANY)
+        print(mail.outbox[0])
