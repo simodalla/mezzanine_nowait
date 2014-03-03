@@ -1,0 +1,16 @@
+{% load i18n %}
+{% block main %}
+{% trans "Hey there, a booking has been created" %}
+
+{% trans "Id" %}: {{ booking.pk }}
+{% trans "user"|capfirst %}: {{ booking.user.last_name|capfirst }}&nbsp;{{ booking.user.first_name|capfirst }}
+{% trans "Type" %}: {{ booking.slottime.booking_type.name }}
+{% trans "Date" %}: {{ booking.slottime.start|date:"l d F Y" }}
+{% trans "Start Time" %}: {{ booking.slottime.start|date:"H:i" }}
+{% trans "End Time" %}: {{ booking.slottime.end|date:"H:i" }}
+{% trans "notes"|capfirst %}: {{ booking.notes }}<br />
+{% trans "telephone"|capfirst %}: {{ booking.telephone }}
+
+{% trans "Use the link below to view details" %}:
+http://{{ request.get_host }}{% url 'bookme:booking_detail' booking.pk %}
+{% endblock %}

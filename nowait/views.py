@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import FormView
 
 from mezzanine.conf import settings
@@ -17,7 +17,7 @@ from mezzanine.conf import settings
 from braces.views import LoginRequiredMixin
 
 from .utils import PageContextTitleMixin, get_root_app_page
-from .models import BookingType, SlotTime
+from .models import Booking, BookingType, SlotTime
 from .forms import BookingCreateForm
 
 
@@ -93,8 +93,7 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
         return {'slottime': self.slottime.pk}
 
     def get_success_url(self):
-        # return reverse('nowait:booking_list')
-        return '/'
+        return reverse('nowait:booking_list')
 
     def form_valid(self, form):
         result = super(BookingCreateView, self).form_valid(form)
@@ -116,3 +115,17 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
                              extra_tags='safe')
             booking.send_emails_on_creation(self.request)
         return result
+
+
+class BookingListView(PageContextTitleMixin, LoginRequiredMixin, ListView):
+    context_object_name = 'booking_list'
+    page_title = _('My Booking')
+
+    def get_queryset(self):
+        return Booking.objects.filter(
+            user=self.request.user.pk).order_by('-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super(BookingListView, self).get_context_data(**kwargs)
+        context.update({'order': self.request.GET.get('order', None)})
+        return context
