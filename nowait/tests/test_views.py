@@ -191,4 +191,4 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
         mock_messages.error.assert_called_once_with(request, ANY)
-        print(mail.outbox[0])
+        # print(mail.outbox[0])

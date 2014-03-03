@@ -282,10 +282,6 @@ class Booking(TimeStampedModel):
     def __str__(self):
         return '%s n.%s' % (self._meta.verbose_name, self.pk)
 
-    def save(self, *args, **kwargs):
-        print("CALL SAVE")
-        return super(Booking, self).save(*args, **kwargs)
-
     @atomic
     def save_with_slottime(self, slottime, request):
         self.slottime = slottime
