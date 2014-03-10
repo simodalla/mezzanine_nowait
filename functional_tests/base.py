@@ -36,6 +36,7 @@ class FunctionalTest(LiveServerTestCase):
                 cls.server_url = 'http://' + arg.split('=')[1]
                 return
         cls.browser = webdriver.Firefox()
+        cls.browser.set_window_size(1080, 800)
         cls.browser.implicitly_wait(5)
         LiveServerTestCase.setUpClass()
         cls.server_url = cls.live_server_url
