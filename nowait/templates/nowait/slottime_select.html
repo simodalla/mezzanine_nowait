@@ -38,7 +38,7 @@
         <div class="row text-center tab-pane fade{% if forloop.first %} in active{% endif %}" id="{% trans month|lower %}">
         {% for slottime in slottimes_for_month %}
             <div class="col-sm-6 col-md-4">
-                <a href="{% url 'nowait:booking_add' slottime.pk %}"
+                <a href="{% url 'nowait:booking_create' slottime.pk %}"
                    id="btn_book_slottime_{{ slottime.pk }}"
                    class="btn btn-primary thumbnail"
                    title="{% trans "Select slot time" %}&nbsp;{% blocktrans with day=slottime.start|date:"l j" from=slottime.start|date:"H:i" to=slottime.end|date:"H:i" %}{{ day }} from {{ from }} to {{ to }}{% endblocktrans %}">
