@@ -11,5 +11,5 @@
 {% trans "telephone"|capfirst %}: {{ booking.telephone }}
 
 {% trans "Use the link below to view details" %}:
-http://{{ request.get_host }}{% url 'bookme:booking_detail' booking.pk %}
+http://{{ request.get_host }}{% url 'nowait:booking_detail' booking.pk %}
 {% endblock %}

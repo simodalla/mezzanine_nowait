@@ -3,7 +3,7 @@
 <p>{% trans "Hey there, a booking has been created" %}</p>
 <p>
     {% trans "Id" %}: {{ booking.pk }}<br />
-    {% trans "user"|capfirst %}: {{ booking.user.last_name|capfirst }}&nbsp;{{ booking.user.first_name|capfirst }}<br />
+    {% trans "booker"|capfirst %}: {{ booking.booker.last_name|capfirst }}&nbsp;{{ booking.booker.first_name|capfirst }}<br />
     {% trans "Type" %}: {{ booking.slottime.booking_type.name }}<br />
     {% trans "Date" %}: {{ booking.slottime.start|date:"l d F Y" }}<br />
     {% trans "Start Time" %}: {{ booking.slottime.start|date:"H:i" }}<br />
@@ -12,5 +12,5 @@
     {% trans "telephone"|capfirst %}: {{ booking.telephone }}
 </p>
 <p>{% trans "Use the link below to view details" %}:</p>
-<p><a href="http://{{ request.get_host }}{% url 'bookme:booking_detail' booking.pk %}">http://{{ request.get_host }}{% url 'bookme:booking_detail' booking.pk %}</a></p>
+<p><a href="http://{{ request.get_host }}{% url 'nowait:booking_detail' booking.pk %}">http://{{ request.get_host }}{% url 'nowait:booking_detail' booking.pk %}</a></p>
 {% endblock %}

@@ -1,2 +1,2 @@
 {% load i18n %}
-{% trans "Your booking has been created successfully" %}
+{% trans "booking created"|capfirst %}
