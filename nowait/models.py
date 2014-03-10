@@ -295,7 +295,7 @@ class Booking(TimeStampedModel):
     def send_emails_on_creation(self, request):
         for template, addr_to in [
             ('booking_created_booker', self.booker.email),
-            ('booking_created_operators',
+            ('booking_created_operator',
              self.slottime.booking_type.get_notification_email())]:
             try:
                 send_mail_template(
