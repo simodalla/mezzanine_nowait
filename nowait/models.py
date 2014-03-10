@@ -19,7 +19,7 @@ from django.utils.timezone import (datetime, timedelta, make_aware,
 
 from mezzanine.core.fields import RichTextField
 from mezzanine.pages.models import Displayable, Link
-from mezzanine.utils.email import send_mail_template
+from mezzanine.utils.email import send_mail_template, subject_template
 
 from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusField
@@ -299,6 +299,8 @@ class Booking(TimeStampedModel):
              self.slottime.booking_type.get_notification_email())]:
             try:
                 send_mail_template(
+                    subject_template(
+                        'nowait/email/subject/{}.txt'.format(template), None),
                     'nowait/email/{}'.format(template), settings.SERVER_EMAIL,
                     addr_to, context={'booking': self,
                                       'request': request})
