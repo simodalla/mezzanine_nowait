@@ -33,7 +33,7 @@ class BookingCreateForm(forms.ModelForm):
                 '',
                 HTML('<div class="alert alert-info text-center">'
                      'Tipo di pratica selezionata: <strong>'
-                     ' {{ slottime.booking_type.name }}</strong></div>'),
+                     ' {{ slottime.booking_type.title }}</strong></div>'),
                 HTML('<div class="alert alert-info text-center">'
                      'Fascia oraria selezionata: <strong>'
                      '{{ slottime.start|date:"l j F Y" }} dalle'
@@ -48,7 +48,7 @@ class BookingCreateForm(forms.ModelForm):
                 Field('telephone', css_class="input-xlarge"),
             ),
             FormActions(
-                Submit('booking', _('Booking Confirmation'),
+                Submit('create_booking', _('Booking Confirmation'),
                        css_class='btn-large')
             )
         )
