@@ -136,7 +136,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
         mock_messages.success.assert_called_once_with(
-            request, self.mock_instance.get_success_message_on_creation(),
+            request, self.mock_instance.success_message_on_creation,
             extra_tags='safe')
 
     @patch('nowait.views.messages')

@@ -7,7 +7,10 @@ try:
 except ImportError:
     from mock import patch
 
+from django.test.utils import override_settings
+
 from nowait.tests.factories import UserF, BookingType30F, RootNowaitPageF
+from nowait.models import SlotTime
 from .base import FunctionalTest
 
 
@@ -36,6 +39,7 @@ class UserCreateBookingTest(FunctionalTest):
     def test_user_choose_slottime_make_login_and_create_booking(
             self, mock_now):
         mock_now.return_value = self.today
+        print(self.today)
         # user go to home page "/"
         self.browser.get(self.get_url('/'))
         # user click on link of root nowait page from left panel tree
@@ -60,3 +64,21 @@ class UserCreateBookingTest(FunctionalTest):
         self.browser.find_element_by_css_selector(
             '.form-actions input').click()
         print(slottime_selected_id)
+        alerts_info = self.browser.find_elements_by_css_selector(
+            '#form_create_booking div.alert-info')
+        print(alerts_info[0].find_element_by_tag_name('strong'))
+        self.assertEqual(
+            alerts_info[0].find_element_by_tag_name('strong').text,
+            self.bookingtype.title)
+        # user insert optionl data notes and telephone and confirm the booking
+        notes = "Additional notes to me"
+        telephone = "0518800990"
+        self.browser.find_element_by_name('notes').send_keys(notes)
+        self.browser.find_element_by_name('telephone').send_keys(telephone)
+        self.browser.find_element_by_name('create_booking').click()
+        slottime = SlotTime.objects.get(
+            pk=int(slottime_selected_id.split('_')[-1]))
+        slottime.status = SlotTime.STATUS.taken
+        self.assertEqual(slottime.booking.notes, notes)
+        self.assertEqual(slottime.booking.telephone, telephone)
+        self.assertEqual(slottime.booking.booker, self.user)
