@@ -26,7 +26,7 @@
             {% for booking in booking_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'bookme:booking_detail' booking.pk %}"
+                        <a href="{% url 'nowait:booking_detail' booking.pk %}"
                            title="{% trans "View details of booking with id" %}&nbsp;{{ booking.pk }}">
                             {{ booking.pk }}
                         </a>
@@ -42,7 +42,10 @@
     {% else %}
         <div class="alert alert-info text-center">
         <h3>{% trans "You have not made ​​any booking" %}</h3>
-        <a href="{% url 'bookme:home' %}" class="btn btn-large btn-primary">
+        {% comment %}
+        <a href="{% url 'nowait:home' %}" class="btn btn-large btn-primary">
+        {% endcomment %}
+        <a href="." class="btn btn-large btn-primary">
             {% trans "Make your first booking" %} &raquo;
         </a>
         </div>
