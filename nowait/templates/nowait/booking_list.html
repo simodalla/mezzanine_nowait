@@ -12,33 +12,35 @@
 {% block main %}
     {{ block.super }}
     {% if booking_list %}
-        <table id="booking_list" class="table table-striped">
-            <thead>
-            <tr>
-                <th>{% trans "Id" %}</th>
-                <th>{% trans "Type" %}</th>
-                <th>{% trans "Date" %}</th>
-                <th>{% trans "Start Time" %}</th>
-                <th>{% trans "End Time" %}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for booking in booking_list %}
+        <div class="table-responsive">
+            <table id="booking_list" class="table table-striped">
+                <thead>
                 <tr>
-                    <td>
-                        <a href="{% url 'nowait:booking_detail' booking.pk %}"
-                           title="{% trans "View details of booking with id" %}&nbsp;{{ booking.pk }}">
-                            {{ booking.pk }}
-                        </a>
-                    </td>
-                    <td>{{ booking.slottime.booking_type.title }}</td>
-                    <td>{{ booking.slottime.start|date:"l d F Y" }}</td>
-                    <td>{{ booking.slottime.start|date:"H:i" }}</td>
-                    <td>{{ booking.slottime.end|date:"H:i" }}</td>
+                    <th>{% trans "Id" %}</th>
+                    <th>{% trans "Type" %}</th>
+                    <th>{% trans "Date" %}</th>
+                    <th>{% trans "Start Time" %}</th>
+                    <th>{% trans "End Time" %}</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for booking in booking_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'nowait:booking_detail' booking.pk %}"
+                               title="{% trans "View details of booking with id" %}&nbsp;{{ booking.pk }}">
+                                {{ booking.pk }}
+                            </a>
+                        </td>
+                        <td>{{ booking.slottime.booking_type.title }}</td>
+                        <td>{{ booking.slottime.start|date:"l d F Y" }}</td>
+                        <td>{{ booking.slottime.start|date:"H:i" }}</td>
+                        <td>{{ booking.slottime.end|date:"H:i" }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <div class="alert alert-info text-center">
         <h3>{% trans "You have not made ​​any booking" %}</h3>

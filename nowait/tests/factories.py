@@ -2,7 +2,8 @@
 
 import factory
 from django.contrib.auth.models import User, Permission, Group
-from mezzanine.pages.models import RichTextPage
+from django.core.urlresolvers import reverse
+from mezzanine.pages.models import RichTextPage, Link
 from .. import models
 from ..defaults import (NOWAIT_ROOT_SLUG, NOWAIT_GROUP_ADMINS,
                         NOWAIT_GROUP_OPERATORS)
@@ -99,6 +100,15 @@ class RichTextPageF(factory.DjangoModelFactory):
 class RootNowaitPageF(RichTextPageF):
     title = 'Root Page of NoWait'
     slug = NOWAIT_ROOT_SLUG
+
+
+class MyBookingLinkF(factory.DjangoModelFactory):
+    FACTORY_FOR = Link
+
+    title = 'My Bookings'
+    slug = reverse('nowait:booking_list').lstrip('/').rstrip('/')
+    parent = factory.SubFactory(RootNowaitPageF)
+    login_required = True
 
 
 class BookingTypeF(factory.DjangoModelFactory):

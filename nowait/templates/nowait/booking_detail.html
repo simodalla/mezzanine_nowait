@@ -1,0 +1,22 @@
+{% extends 'pages/page.html' %}
+{% load l10n i18n %}
+
+{% block breadcrumb_menu %}
+    {{ block.super }}
+    <li class="active">
+        {{ title }}
+    </li>
+{% endblock %}
+
+{% block main %}
+    {{ block.super }}
+    <table id="booking_detail" class="table table-striped table-bordered table-center">
+        <tbody>
+            <tr><th>{% trans "Id" %}</th><td>{{ booking.pk }}</td></tr>
+            <tr><th>{% trans "Type" %}</th><td>{{ booking.slottime.booking_type.title }}</td></tr>
+            <tr><th>{% trans "Date" %}</th><td>{{ booking.slottime.start|date:"l d F Y" }}</td></tr>
+            <tr><th>{% trans "Start Time" %}</th><td>{{ booking.slottime.start|date:"H:i" }}</td></tr>
+            <tr><th>{% trans "End Time" %}</th><td>{{ booking.slottime.end|date:"H:i" }}</td></tr>
+        </tbody>
+    </table>
+{% endblock %}

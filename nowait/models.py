@@ -107,7 +107,7 @@ class BookingType(Displayable):
         except ImproperlyConfigured as e:
             raise e
         link, created = Link.objects.get_or_create(
-            slug=self.get_absolute_url(),
+            slug=self.get_absolute_url().rstrip('/').lstrip('/'),
             parent=root_page,
             defaults={'title': self.title})
         if self.link != link:

@@ -11,8 +11,9 @@ except ImportError:
 
 from django.test.utils import override_settings
 
-from nowait.tests.factories import UserF, BookingType30F, RootNowaitPageF
-from nowait.models import SlotTime
+from nowait.tests.factories import (UserF, BookingType30F, RootNowaitPageF,
+                                    MyBookingLinkF)
+from nowait.models import Booking, SlotTime
 from .base import FunctionalTest
 
 
@@ -21,6 +22,7 @@ class UserCreateBookingTest(FunctionalTest):
         super(UserCreateBookingTest, self).setUp()
         self.user = UserF()
         self.root = RootNowaitPageF()
+        MyBookingLinkF()
         # self.create_pre_authenticated_session(self.admin)
         # 2013-9-9 is a Monday
         start = date(2013, 9, 9)
@@ -51,6 +53,7 @@ class UserCreateBookingTest(FunctionalTest):
         left_panel_tree = self.get_left_panel_tree()
         left_panel_tree.find_element_by_link_text(
             self.bookingtype.title).click()
+
         # user click on link "Make your reservation"
         self.browser.find_element_by_partial_link_text(
             'Make your reservation').click()
@@ -58,6 +61,7 @@ class UserCreateBookingTest(FunctionalTest):
             '.tab-content .active a.thumbnail')[0]
         slottime_selected_id = slottime_selected.get_attribute('id')
         slottime_selected.click()
+
         # user is redirected to login page and now insert his credentials
         self.browser.find_element_by_id('id_username').send_keys(
             self.user.username)
@@ -77,9 +81,8 @@ class UserCreateBookingTest(FunctionalTest):
             self.live_server_url + reverse(
                 'nowait:slottime_select',
                 kwargs={'slug': self.bookingtype.slug}))
+
         # user insert optionl data notes and telephone and confirm the booking
-        import ipdb
-        ipdb.set_trace()
         notes = "Additional notes to me"
         telephone = "0518800990"
         self.browser.find_element_by_name('notes').send_keys(notes)
@@ -91,4 +94,12 @@ class UserCreateBookingTest(FunctionalTest):
         self.assertEqual(slottime.booking.notes, notes)
         self.assertEqual(slottime.booking.telephone, telephone)
         self.assertEqual(slottime.booking.booker, self.user)
+
+        # user is redirected to list of Booking and click on link for view
+        # detail
+        table = self.browser.find_element_by_id('booking_list')
+        table.find_element_by_link_text(str(slottime.booking.pk)).click()
+
+        table = self.browser.find_element_by_id('booking_detail')
+        print(table)
 

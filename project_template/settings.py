@@ -399,7 +399,7 @@ try:
 except ImportError:
     pass
 
-CRISPY_TEMPLATE_PACK = 'bootstrap'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # for functional tests
 INSTALLED_APPS = list(INSTALLED_APPS) + [
     PACKAGE_NAME_GRAPPELLI, PACKAGE_NAME_FILEBROWSER,
