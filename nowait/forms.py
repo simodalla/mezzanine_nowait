@@ -9,7 +9,7 @@ from mezzanine.utils.models import get_user_model
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Field, Fieldset
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.bootstrap import FormActions , Alert
 
 from .models import Booking, BookingType, Email
 from .utils import UserChoiceField
@@ -30,30 +30,39 @@ class BookingCreateForm(forms.ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-8'
+        booking_type_info = _('Booking type selected')
+        slottime_info = _('Slot time selected')
+        from_txt = _('from')
+        to_txt = _('to')
+        change_label = _('Change it')
         self.helper.layout = Layout(
             Fieldset(
                 '',
                 HTML('<div class="alert alert-info text-center">'
-                     'Tipo di pratica selezionata: <strong>'
-                     ' {{ slottime.booking_type.title }}</strong></div>'),
+                     '%s:&nbsp;<strong>'
+                     '{{ slottime.booking_type.title }}</strong>'
+                     '</div>' % booking_type_info),
                 HTML('<div class="alert alert-info text-center">'
-                     'Fascia oraria selezionata: <strong>'
-                     '{{ slottime.start|date:"l j F Y" }} dalle'
-                     ' {{ slottime.start|date:"H:i" }} alle'
+                     '%(slottime_info)s:&nbsp;<strong>'
+                     '{{ slottime.start|date:"l j F Y" }}&nbsp;%(from)s'
+                     ' {{ slottime.start|date:"H:i" }}&nbsp;%(to)s'
                      ' {{ slottime.end|date:"H:i" }}</strong>'
-                     '&nbsp;&nbsp;&nbsp;<a href="'
-                     '{% url \'nowait:slottime_select\''
-                     ' slottime.booking_type.slug %}" class="btn btn-small'
-                     ' btn-inverse">Cambiala &raquo;</a></div>'),
+                     '&nbsp;&nbsp;&nbsp;<a role="button"'
+                     ' href="' % {'slottime_info': slottime_info,
+                                  'from': from_txt, 'to': to_txt} +
+                     '{% url \'nowait:slottime_select\' slottime.booking_type.'
+                     'slug %}' + '" class="btn btn-primary">%s '
+                                 '&raquo;</a></div>' % change_label),
                 'slottime',
-                # Field('notes', css_class="input-xlarge"),
-                # Field('telephone', css_class="input-xlarge"),
                 'notes',
                 'telephone'
             ),
+
             FormActions(
+                HTML('<div class="col-lg-offset-2 col-lg-8">'),
                 Submit('create_booking', _('Booking Confirmation'),
-                       css_class='btn-large')
+                       css_class='btn-large'),
+                HTML('</div>')
             )
         )
 
