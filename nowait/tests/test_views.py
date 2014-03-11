@@ -9,6 +9,9 @@ except ImportError:
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now, timedelta
 from django.test import TestCase, RequestFactory
+
+from mezzanine.conf import settings
+
 from .factories import BookingType30F, UserF, RootNowaitPageF
 from ..defaults import NOWAIT_ROOT_SLUG
 from ..models import SlotTime
@@ -42,7 +45,8 @@ class SlottimeSelectViewTest(TestCase):
         self.root = RootNowaitPageF()
 
     def test_get_view_with_wrong_booking_type_slug(self):
-        response = self.client.get(self.url.format(slug='fake-slug'))
+        response = self.client.get(self.url.format(slug='fake-slug'),
+                                   follow=True)
         self.assertRedirects(response, '/%s/' % NOWAIT_ROOT_SLUG)
 
     def test_get_page_title(self):
@@ -83,7 +87,8 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         exist.
         """
         response = self.client.get(reverse('nowait:booking_create',
-                                           kwargs={'slottime_pk': 999}))
+                                           kwargs={'slottime_pk': 999}),
+                                   follow=True)
         self.assertRedirects(
             response, '/{page.slug}/'.format(page=self.root))
 
@@ -213,3 +218,14 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         response = BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
         self.assertEqual(getattr(response, 'url', response['Location']), '.')
+
+
+class HomeViewTest(TestCase):
+
+    def setUp(self):
+        RootNowaitPageF()
+
+    def test_redirect_to_root_page(self):
+        response = self.client.get(reverse('nowait:home'))
+        self.assertRedirects(
+            response, '/{}/'.format(settings.NOWAIT_ROOT_SLUG))
