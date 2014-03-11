@@ -135,15 +135,6 @@ class BookingDetailView(PageContextTitleMixin, LoginRequiredMixin,
                         DetailView):
     model = Booking
 
-    def get_breadcrumb_menu(self):
-        data = ['']
-        return data
-
-    def get_context_data(self, **kwargs):
-        context = super(BookingDetailView, self).get_context_data(**kwargs)
-
-        return context
-
     def get_page_title(self):
         return _('Details of booking %(pk)s') % {'pk': self.object.pk}
 
