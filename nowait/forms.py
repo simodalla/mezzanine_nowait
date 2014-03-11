@@ -9,7 +9,7 @@ from mezzanine.utils.models import get_user_model
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Field, Fieldset
-from crispy_forms.bootstrap import FormActions , Alert
+from crispy_forms.bootstrap import FormActions
 
 from .models import Booking, BookingType, Email
 from .utils import UserChoiceField

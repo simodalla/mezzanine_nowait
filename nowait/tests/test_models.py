@@ -69,7 +69,8 @@ class BookingTypeModelTest(TestCase):
         self.assertTrue(isinstance(link, Link))
         self.assertTrue(created)
         self.assertEqual(link, obj.link)
-        self.assertEqual(link.slug, obj.get_absolute_url())
+        self.assertEqual(link.slug, obj.get_absolute_url().lstrip(
+            '/').rstrip('/'))
         self.assertEqual(link.title, obj.title)
 
     def test_get_or_create_link_delete_old_link(self):
@@ -85,7 +86,8 @@ class BookingTypeModelTest(TestCase):
         self.assertTrue(isinstance(link, Link))
         self.assertTrue(created)
         self.assertEqual(link, obj.link)
-        self.assertEqual(link.slug, obj.get_absolute_url())
+        self.assertEqual(link.slug, obj.get_absolute_url().lstrip(
+            '/').rstrip('/'))
         self.assertEqual(link.title, obj.title)
         old_wrong_link.delete.assert_called_once_with()
 
@@ -350,8 +352,7 @@ class BookingModelTest(TestCase):
         self.assertEqual(
             booking.success_message_on_creation,
             'Your booking for "{}" is succesfully created with'
-            ' id: <b>{}</b>'.format(self.slottime.booking_type.title,
-                                    booking.pk))
+            ' id: {}'.format(self.slottime.booking_type.title, booking.pk))
 
     @override_settings(SERVER_EMAIL=SERVER_EMAIL)
     @patch('nowait.models.send_mail_template')

@@ -9,11 +9,10 @@ try:
 except ImportError:
     from mock import patch
 
-from django.test.utils import override_settings
 
 from nowait.tests.factories import (UserF, BookingType30F, RootNowaitPageF,
                                     MyBookingLinkF)
-from nowait.models import Booking, SlotTime
+from nowait.models import SlotTime
 from .base import FunctionalTest
 
 
@@ -100,6 +99,6 @@ class UserCreateBookingTest(FunctionalTest):
         table = self.browser.find_element_by_id('booking_list')
         table.find_element_by_link_text(str(slottime.booking.pk)).click()
 
-        table = self.browser.find_element_by_id('booking_detail')
-        print(table)
-
+        tds = self.browser.find_elements_by_css_selector(
+            'table#booking_detail tbody tr td')
+        self.assertEqual(tds[0].text, str(slottime.booking.pk))

@@ -136,8 +136,7 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
         mock_messages.success.assert_called_once_with(
-            request, self.mock_instance.success_message_on_creation,
-            extra_tags='safe')
+            request, self.mock_instance.success_message_on_creation)
 
     @patch('nowait.views.messages')
     @patch('django.forms.models.construct_instance', spec=True)
@@ -213,7 +212,4 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         mock_construct_instance.return_value = self.mock_instance
         response = BookingCreateView.as_view()(
             request, **{'slottime_pk': self.slottime.pk})
-        try:
-            self.assertEqual(response.url, '.')
-        except AttributeError:
-            self.assertEqual(response['Location'], '.')
+        self.assertEqual(getattr(response, 'url', response['Location']), '.')
