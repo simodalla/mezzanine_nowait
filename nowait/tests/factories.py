@@ -106,7 +106,7 @@ class MyBookingLinkF(factory.DjangoModelFactory):
     FACTORY_FOR = Link
 
     title = 'My Bookings'
-    slug = reverse('nowait:booking_list').lstrip('/').rstrip('/')
+    slug = NOWAIT_ROOT_SLUG + '/booking'
     parent = factory.SubFactory(RootNowaitPageF)
     login_required = True
 
