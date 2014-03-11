@@ -168,11 +168,11 @@ class SlotTimeAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
 
 
 class BookingAdmin(MixinCheckOperatorAdminView, admin.ModelAdmin):
-    list_display = ['pk', 'user', 'formatted_day', 'formatted_start',
+    list_display = ['pk', 'booker', 'formatted_day', 'formatted_start',
                     'formatted_end', 'notes', 'telephone']
     list_per_page = 20
-    search_fields = ['id', 'user__username', 'user__last_name',
-                     'user__first_name', 'slottime__booking_type__name']
+    search_fields = ['id', 'booker__username', 'booker__last_name',
+                     'booker__first_name', 'slottime__booking_type__name']
 
     def formatted_day(self):
         result = u'{} {} {} {}'.format(
