@@ -19,7 +19,7 @@ class NowaitGOperatorsF(factory.DjangoModelFactory):
     def _prepare(cls, create, **kwargs):
         group = super(NowaitGOperatorsF, cls)._prepare(create, **kwargs)
         group.permissions.add(
-            *Permission.objects.filter(content_type__app_label='bookme',
+            *Permission.objects.filter(content_type__app_label='nowait',
                                        codename__startswith='change'))
         return group
 
@@ -33,7 +33,7 @@ class NowaitGAdminsF(factory.DjangoModelFactory):
     def _prepare(cls, create, **kwargs):
         group = super(NowaitGAdminsF, cls)._prepare(create, **kwargs)
         group.permissions.add(
-            *Permission.objects.filter(content_type__app_label='bookme'))
+            *Permission.objects.filter(content_type__app_label='nowait'))
         return group
 
 

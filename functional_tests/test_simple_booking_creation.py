@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 from datetime import date, timedelta
+from django.core.urlresolvers import reverse
+
 try:
     from unittest.mock import patch
 except ImportError:
@@ -63,14 +65,21 @@ class UserCreateBookingTest(FunctionalTest):
             self.user.username)
         self.browser.find_element_by_css_selector(
             '.form-actions input').click()
-        print(slottime_selected_id)
+
+        # tests alerts_info
         alerts_info = self.browser.find_elements_by_css_selector(
             '#form_create_booking div.alert-info')
-        print(alerts_info[0].find_element_by_tag_name('strong'))
         self.assertEqual(
             alerts_info[0].find_element_by_tag_name('strong').text,
             self.bookingtype.title)
+        self.assertEqual(
+            alerts_info[1].find_element_by_tag_name('a').get_attribute('href'),
+            self.live_server_url + reverse(
+                'nowait:slottime_select',
+                kwargs={'slug': self.bookingtype.slug}))
         # user insert optionl data notes and telephone and confirm the booking
+        import ipdb
+        ipdb.set_trace()
         notes = "Additional notes to me"
         telephone = "0518800990"
         self.browser.find_element_by_name('notes').send_keys(notes)
@@ -82,3 +91,4 @@ class UserCreateBookingTest(FunctionalTest):
         self.assertEqual(slottime.booking.notes, notes)
         self.assertEqual(slottime.booking.telephone, telephone)
         self.assertEqual(slottime.booking.booker, self.user)
+

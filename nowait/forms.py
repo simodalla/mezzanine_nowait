@@ -28,6 +28,8 @@ class BookingCreateForm(forms.ModelForm):
         self.helper.form_id = 'form_create_booking'
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             Fieldset(
                 '',
@@ -44,8 +46,10 @@ class BookingCreateForm(forms.ModelForm):
                      ' slottime.booking_type.slug %}" class="btn btn-small'
                      ' btn-inverse">Cambiala &raquo;</a></div>'),
                 'slottime',
-                Field('notes', css_class="input-xlarge"),
-                Field('telephone', css_class="input-xlarge"),
+                # Field('notes', css_class="input-xlarge"),
+                # Field('telephone', css_class="input-xlarge"),
+                'notes',
+                'telephone'
             ),
             FormActions(
                 Submit('create_booking', _('Booking Confirmation'),

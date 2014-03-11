@@ -112,8 +112,7 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
             return redirect('.')
         else:
             messages.success(self.request,
-                             booking.success_message_on_creation,
-                             extra_tags='safe')
+                             booking.success_message_on_creation)
             booking.send_emails_on_creation(self.request)
         return result
 
@@ -124,7 +123,7 @@ class BookingListView(PageContextTitleMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Booking.objects.filter(
-            user=self.request.user.pk).order_by('-pk')
+            booker=self.request.user.pk).order_by('-pk')
 
     def get_context_data(self, **kwargs):
         context = super(BookingListView, self).get_context_data(**kwargs)
@@ -142,4 +141,4 @@ class BookingDetailView(PageContextTitleMixin, LoginRequiredMixin,
     def get_queryset(self):
         print(self.request.user)
         return super(BookingDetailView, self).get_queryset().filter(
-            user=self.request.user)
+            booker=self.request.user)

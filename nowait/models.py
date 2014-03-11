@@ -289,7 +289,7 @@ class Booking(TimeStampedModel):
         title = self.slottime.booking_type.title
         message = (
             _('Your booking for "%(booking_type)s" is succesfully created with'
-              ' id: <b>%(pk)s</b>') % {'booking_type': title, 'pk': self.pk})
+              ' id: %(pk)s') % {'booking_type': title, 'pk': self.pk})
         return message
 
     def send_emails_on_creation(self, request):

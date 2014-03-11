@@ -252,8 +252,8 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
-            # 'email_backend': 'django.core.mail.backends.console.'
-            #                  'EmailBackend',
+            'email_backend': 'django.core.mail.backends.console.'
+                             'EmailBackend',
         }
     },
     'loggers': {
