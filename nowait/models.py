@@ -80,9 +80,9 @@ class BookingType(Displayable):
     operators = models.ManyToManyField(
         settings.AUTH_USER_MODEL, blank=True, null=True,
         verbose_name=_('operators'))
-    notifications_email_enable = models.BooleanField(
+    notification_emails_enable = models.BooleanField(
         _('Enable email notifications'), default=True)
-    notifications_emails = models.ManyToManyField(
+    notification_emails = models.ManyToManyField(
         Email, blank=True, null=True, verbose_name=_('Emails to notify'))
     raw_location = models.CharField(_('Location (raw)'), max_length=500,
                                     blank=True)
@@ -118,8 +118,10 @@ class BookingType(Displayable):
                 old_link.delete()
         return link, created
 
-    def get_notification_email(self):
-        return []
+    def get_notification_emails(self):
+        emails = [operator.email for operator in self.operators.all()]
+        emails += [email.email for email in self.notification_emails.all()]
+        return emails
 
 
 @python_2_unicode_compatible
@@ -296,7 +298,7 @@ class Booking(TimeStampedModel):
         for template, addr_to in [
             ('booking_created_booker', self.booker.email),
             ('booking_created_operator',
-             self.slottime.booking_type.get_notification_email())]:
+             self.slottime.booking_type.get_notification_emails())]:
             try:
                 send_mail_template(
                     subject_template(
