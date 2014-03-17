@@ -119,6 +119,13 @@ class BookingType(Displayable):
         return link, created
 
     def get_notification_emails(self):
+        """
+        Return list of email addresses from email of self.operators and from
+        self.notification_emails
+
+        :return: list of email address
+        :rtype: list of string
+        """
         emails = [operator.email for operator in self.operators.all()]
         emails += [email.email for email in self.notification_emails.all()]
         return emails

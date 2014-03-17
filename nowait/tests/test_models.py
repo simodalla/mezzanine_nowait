@@ -91,6 +91,26 @@ class BookingTypeModelTest(TestCase):
         self.assertEqual(link.title, obj.title)
         old_wrong_link.delete.assert_called_once_with()
 
+    def test_get_notifacation_email_of_only_operators(self):
+        n_operators = 3
+        booking_type = BookingType.objects.create(title=self.title)
+        [booking_type.operators.add(UserF()) for i in range(0, n_operators)]
+        emails = booking_type.get_notification_emails()
+        self.assertSequenceEqual(
+            emails,
+            [operator.email for operator in booking_type.operators.all()])
+
+    def test_get_notifacation_email_of_only_notification_emails(self):
+        n_emails = 3
+        booking_type = BookingType.objects.create(title=self.title)
+        [booking_type.notification_emails.add(
+            Email.objects.create(email='email_{}@example.com'.format(i)))
+         for i in range(0, n_emails)]
+        emails = booking_type.get_notification_emails()
+        self.assertSequenceEqual(
+            emails,
+            [email for email in Email.objects.values_list('email', flat=True)])
+
 
 class DailySlotTimePatternModelTest(TestCase):
 
@@ -361,7 +381,7 @@ class BookingModelTest(TestCase):
         emails = ['mail1@example.com', 'mail2@example.com']
         mock_emails = Mock()
         mock_emails.return_value = emails
-        self.slottime.booking_type.get_notification_email = mock_emails
+        self.slottime.booking_type.get_notification_emails = mock_emails
         request = RequestFactory().get('/fake')
         booking = Booking()
         booking.booker = self.booker
@@ -380,7 +400,7 @@ class BookingModelTest(TestCase):
     def test_send_emails_on_creation_raise_exception(
             self, mock_send_mail_template, mock_get_logger):
         exception = SMTPException('Boom!')
-        self.slottime.booking_type.get_notification_email = (
+        self.slottime.booking_type.get_notification_emails = (
             Mock(return_value=[]))
         mock_send_mail_template.side_effect = exception
         mock_logger = Mock()
