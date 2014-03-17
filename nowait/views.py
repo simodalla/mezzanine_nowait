@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _

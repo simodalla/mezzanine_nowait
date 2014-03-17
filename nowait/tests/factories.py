@@ -2,7 +2,6 @@
 
 import factory
 from django.contrib.auth.models import User, Permission, Group
-from django.core.urlresolvers import reverse
 from mezzanine.pages.models import RichTextPage, Link
 from .. import models
 from ..defaults import (NOWAIT_ROOT_SLUG, NOWAIT_GROUP_ADMINS,
