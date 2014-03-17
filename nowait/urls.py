@@ -2,12 +2,16 @@
 from __future__ import unicode_literals, absolute_import
 from django.conf.urls import patterns, url
 
+from mezzanine.conf import settings
+
 from .views import (BookingCreateView, BookingDetailView, BookingListView,
-                    BookingTypeDetailView, SlottimeSelectView)
+                    BookingTypeDetailView, HomeView, SlottimeSelectView)
+
+settings.use_editable()
 
 urlpatterns = patterns(
     'nowait.views',
-    # url(r'^$', BookingTypeListView.as_view(), name='home'),
+    url(r'^home/$', HomeView.as_view(), name='home'),
     url(r'^booking/$', BookingListView.as_view(),
         name='booking_list'),
     url(r'^booking/(?P<pk>\d+)/$', BookingDetailView.as_view(),

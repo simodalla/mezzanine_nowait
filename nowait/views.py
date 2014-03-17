@@ -9,7 +9,8 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import (DetailView, ListView, TemplateView,
+                                  RedirectView)
 from django.views.generic.edit import FormView
 
 from mezzanine.conf import settings
@@ -19,6 +20,15 @@ from braces.views import LoginRequiredMixin
 from .utils import PageContextTitleMixin, get_root_app_page
 from .models import Booking, BookingType, SlotTime
 from .forms import BookingCreateForm
+
+
+class HomeView(RedirectView):
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        settings.use_editable()
+        return '/{slug}/'.format(
+            slug=settings.NOWAIT_ROOT_SLUG.lstrip('/').rstrip('/'))
 
 
 class BookingTypeDetailView(PageContextTitleMixin, DetailView):
@@ -38,13 +48,7 @@ class SlottimeSelectView(PageContextTitleMixin, TemplateView):
             self.booking_type = BookingType.objects.get(
                 slug=kwargs['slug'])
         except BookingType.DoesNotExist:
-            try:
-                url_to_return = reverse('nowait:home')
-            except NoReverseMatch:
-                settings.use_editable()
-                url_to_return = '/{slug}/'.format(
-                    slug=settings.NOWAIT_ROOT_SLUG.lstrip('/').rstrip('/'))
-            return redirect(url_to_return)
+            return redirect(reverse('nowait:home'))
         return super(SlottimeSelectView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
