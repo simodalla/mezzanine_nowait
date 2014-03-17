@@ -74,8 +74,7 @@ class BookingCreateForm(forms.ModelForm):
             raise forms.ValidationError(_('Slot time selected is already'
                                           ' assigned'))
         except Booking.DoesNotExist:
-            pass
-        return cleaned_data
+            return cleaned_data
 
 
 class CalendarGoogleConnectForm(forms.Form):
