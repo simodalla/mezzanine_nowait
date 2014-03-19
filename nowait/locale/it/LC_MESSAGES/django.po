@@ -1,0 +1,437 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-11 19:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:37
+msgid "You do not have permission to modify this object type."
+msgstr ""
+
+#: admin.py:63
+msgid "Booking type data"
+msgstr ""
+
+#: admin.py:79
+#, python-format
+msgid "Link to \"%(url)s\" successfully created"
+msgstr ""
+
+#: admin.py:98
+msgid "Publication data"
+msgstr ""
+
+#: admin.py:103
+#, python-format
+msgid ""
+"Wrong form for \"%(model)s\" creation, please contact site administrator."
+msgstr ""
+
+#: admin.py:122 models.py:94
+msgid "booking types"
+msgstr ""
+
+#: admin.py:143
+msgid "slottimes generated"
+msgstr ""
+
+#: admin.py:150
+msgid "Create slottimes from generation"
+msgstr ""
+
+#: admin.py:167 models.py:50 models.py:77
+msgid "calendar"
+msgstr ""
+
+#: admin.py:185 models.py:128
+msgid "day"
+msgstr ""
+
+#: admin.py:189 templates/nowait/booking_detail.html:18
+#: templates/nowait/booking_list.html:22
+#: templates/nowait/email/booking_created_booker.html:8
+#: templates/nowait/email/booking_created_booker.txt:8
+#: templates/nowait/email/booking_created_operator.html:9
+#: templates/nowait/email/booking_created_operator.txt:9
+msgid "Start Time"
+msgstr ""
+
+#: admin.py:193 templates/nowait/booking_detail.html:19
+#: templates/nowait/booking_list.html:23
+#: templates/nowait/email/booking_created_booker.html:9
+#: templates/nowait/email/booking_created_booker.txt:9
+#: templates/nowait/email/booking_created_operator.html:10
+#: templates/nowait/email/booking_created_operator.txt:10
+msgid "End Time"
+msgstr ""
+
+#: defaults.py:7
+msgid "NoWait"
+msgstr ""
+
+#: forms.py:33
+msgid "Booking type selected"
+msgstr ""
+
+#: forms.py:34
+msgid "Slot time selected"
+msgstr ""
+
+#: forms.py:35
+msgid "from"
+msgstr ""
+
+#: forms.py:36
+msgid "to"
+msgstr ""
+
+#: forms.py:37
+msgid "Change it"
+msgstr ""
+
+#: forms.py:63
+msgid "Booking Confirmation"
+msgstr ""
+
+#: forms.py:74
+msgid "Slot time selected is already assigned"
+msgstr ""
+
+#: forms.py:97
+msgid "Connect"
+msgstr ""
+
+#: forms.py:110 models.py:82
+msgid "operators"
+msgstr ""
+
+#: forms.py:114 models.py:86
+msgid "Emails to notify"
+msgstr ""
+
+#: models.py:31
+msgid "monday"
+msgstr ""
+
+#: models.py:31
+msgid "tuesday"
+msgstr ""
+
+#: models.py:32
+msgid "wednesday"
+msgstr ""
+
+#: models.py:32
+msgid "thursday"
+msgstr ""
+
+#: models.py:33
+msgid "friday"
+msgstr ""
+
+#: models.py:33
+msgid "saturday"
+msgstr ""
+
+#: models.py:34
+msgid "sunday"
+msgstr ""
+
+#: models.py:39
+msgid "name"
+msgstr ""
+
+#: models.py:40
+msgid "description"
+msgstr ""
+
+#: models.py:42
+msgid "owner"
+msgstr ""
+
+#: models.py:43
+msgid "google id"
+msgstr ""
+
+#: models.py:45
+msgid "google summary"
+msgstr ""
+
+#: models.py:51
+msgid "calendars"
+msgstr ""
+
+#: models.py:59 models.py:64
+msgid "email"
+msgstr ""
+
+#: models.py:60 models.py:264
+#: templates/nowait/email/booking_created_booker.html:10
+#: templates/nowait/email/booking_created_booker.txt:10
+#: templates/nowait/email/booking_created_operator.html:11
+#: templates/nowait/email/booking_created_operator.txt:11
+msgid "notes"
+msgstr ""
+
+#: models.py:65
+msgid "emails"
+msgstr ""
+
+#: models.py:74
+msgid "slot length"
+msgstr ""
+
+#: models.py:75
+msgid "Length in minutes of slot time."
+msgstr ""
+
+#: models.py:76
+msgid "intro"
+msgstr ""
+
+#: models.py:79
+msgid "informations"
+msgstr ""
+
+#: models.py:84
+msgid "Enable email notifications"
+msgstr ""
+
+#: models.py:87
+msgid "Location (raw)"
+msgstr ""
+
+#: models.py:93 models.py:223
+msgid "booking type"
+msgstr ""
+
+#: models.py:129
+msgid "start time"
+msgstr ""
+
+#: models.py:130
+msgid "end time"
+msgstr ""
+
+#: models.py:133
+msgid "daily slot time pattern"
+msgstr ""
+
+#: models.py:134
+msgid "daily slot time patterns"
+msgstr ""
+
+#: models.py:146
+msgid "start date"
+msgstr ""
+
+#: models.py:147
+msgid "end date"
+msgstr ""
+
+#: models.py:149 models.py:228
+msgid "user"
+msgstr ""
+
+#: models.py:152
+msgid "slot times generation"
+msgstr ""
+
+#: models.py:153
+msgid "slot times generations"
+msgstr ""
+
+#: models.py:219
+msgid "free"
+msgstr ""
+
+#: models.py:219
+msgid "taken"
+msgstr ""
+
+#: models.py:221
+msgid "generation"
+msgstr ""
+
+#: models.py:224
+msgid "start"
+msgstr ""
+
+#: models.py:225
+msgid "end"
+msgstr ""
+
+#: models.py:226
+msgid "status"
+msgstr ""
+
+#: models.py:235 models.py:262
+msgid "slot time"
+msgstr ""
+
+#: models.py:236
+msgid "slot times"
+msgstr ""
+
+#: models.py:261 templates/nowait/email/booking_created_operator.html:6
+#: templates/nowait/email/booking_created_operator.txt:6
+msgid "booker"
+msgstr ""
+
+#: models.py:265
+msgid ""
+"add notes to communicate to the  person in charge of booking (this field is "
+"not required)"
+msgstr ""
+
+#: models.py:268 templates/nowait/email/booking_created_booker.html:11
+#: templates/nowait/email/booking_created_booker.txt:11
+#: templates/nowait/email/booking_created_operator.html:12
+#: templates/nowait/email/booking_created_operator.txt:12
+msgid "telephone"
+msgstr ""
+
+#: models.py:269
+msgid ""
+"enter an alternate phone number to the one entered during registration (this "
+"field is not required)"
+msgstr ""
+
+#: models.py:273
+msgid "booking"
+msgstr ""
+
+#: models.py:274
+msgid "bookings"
+msgstr ""
+
+#: models.py:291
+#, python-format
+msgid ""
+"Your booking for \"%(booking_type)s\" is succesfully created with id: %(pk)s"
+msgstr ""
+
+#: views.py:28
+#, python-format
+msgid "%(title)s"
+msgstr ""
+
+#: views.py:33
+msgid "Select day and slot time"
+msgstr ""
+
+#: views.py:73
+msgid "Confirmation of booking"
+msgstr ""
+
+#: views.py:104
+msgid "Sorry. An error is occured. Please try again later."
+msgstr ""
+
+#: views.py:122
+msgid "My Booking"
+msgstr ""
+
+#: views.py:139
+#, python-format
+msgid "Details of booking %(pk)s"
+msgstr ""
+
+#: templates/nowait/booking_detail.html:15
+#: templates/nowait/booking_list.html:19
+#: templates/nowait/email/booking_created_booker.html:5
+#: templates/nowait/email/booking_created_booker.txt:5
+#: templates/nowait/email/booking_created_operator.html:5
+#: templates/nowait/email/booking_created_operator.txt:5
+msgid "Id"
+msgstr ""
+
+#: templates/nowait/booking_detail.html:16
+#: templates/nowait/booking_list.html:20
+#: templates/nowait/email/booking_created_booker.html:6
+#: templates/nowait/email/booking_created_booker.txt:6
+#: templates/nowait/email/booking_created_operator.html:7
+#: templates/nowait/email/booking_created_operator.txt:7
+msgid "Type"
+msgstr ""
+
+#: templates/nowait/booking_detail.html:17
+#: templates/nowait/booking_list.html:21
+#: templates/nowait/email/booking_created_booker.html:7
+#: templates/nowait/email/booking_created_booker.txt:7
+#: templates/nowait/email/booking_created_operator.html:8
+#: templates/nowait/email/booking_created_operator.txt:8
+msgid "Date"
+msgstr ""
+
+#: templates/nowait/booking_list.html:31
+msgid "View details of booking with id"
+msgstr ""
+
+#: templates/nowait/booking_list.html:46
+msgid "You have not made ​​any booking"
+msgstr ""
+
+#: templates/nowait/booking_list.html:52
+msgid "Make your first booking"
+msgstr ""
+
+#: templates/nowait/bookingtype_detail.html:16
+msgid "Make your reservation"
+msgstr ""
+
+#: templates/nowait/slottime_select.html:44
+msgid "Select slot time"
+msgstr ""
+
+#: templates/nowait/slottime_select.html:44
+#, python-format
+msgid "%(day)s from %(from)s to %(to)s"
+msgstr ""
+
+#: templates/nowait/slottime_select.html:45
+#, python-format
+msgid ""
+"\n"
+"                        %(day)s&nbsp;from&nbsp;%(from)s&nbsp;to&nbsp;%(to)s\n"
+"                    "
+msgstr ""
+
+#: templates/nowait/email/booking_created_booker.html:3
+#: templates/nowait/email/booking_created_booker.txt:3
+msgid "Hey there, your booking has been created successfully"
+msgstr ""
+
+#: templates/nowait/email/booking_created_booker.html:13
+#: templates/nowait/email/booking_created_booker.txt:13
+#: templates/nowait/email/booking_created_operator.html:14
+#: templates/nowait/email/booking_created_operator.txt:14
+msgid "Use the link below to view details"
+msgstr ""
+
+#: templates/nowait/email/booking_created_operator.html:3
+#: templates/nowait/email/booking_created_operator.txt:3
+msgid "Hey there, a booking has been created"
+msgstr ""
+
+#: templates/nowait/email/subject/booking_created_booker.txt:2
+msgid "Your booking has been created successfully"
+msgstr ""
+
+#: templates/nowait/email/subject/booking_created_operator.txt:2
+msgid "booking created"
+msgstr ""
