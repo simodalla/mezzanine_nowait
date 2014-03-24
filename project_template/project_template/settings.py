@@ -223,7 +223,7 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 # or "C:/www/django/templates".
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
-TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
+TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "../templates"),)
 
 ###########
 # LOGGING #
@@ -300,6 +300,7 @@ INSTALLED_APPS = (
     # "django_pdb",
     "crispy_forms",
     # "functional_tests",
+    "djcelery",
 )
 
 # List of processors used by RequestContext to populate the context.
@@ -395,7 +396,7 @@ DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 # ignored in your version control system allowing for settings to be
 # defined per machine.
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass
 
@@ -404,6 +405,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 INSTALLED_APPS = list(INSTALLED_APPS) + [
     PACKAGE_NAME_GRAPPELLI, PACKAGE_NAME_FILEBROWSER,
     'django.contrib.redirects']
+
+BROKER_URL = 'amqp://guest:guest@localhost//'
 
 ####################
 # DYNAMIC SETTINGS #
