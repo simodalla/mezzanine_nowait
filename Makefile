@@ -5,11 +5,15 @@ help:
 	@echo "clean-pyc - remove Python file artifacts"
 	@echo "lint - check style with flake8"
 	@echo "test - run tests quickly with the default Python"
-	@echo "testall - run tests on every Python version with tox"
+	@echo "test-ft - run functional tests quickly with the default Python"
+	@echo "test-all - run tests on every Python version with tox"
+	@echo "test-all-ft - run functional tests on every Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
+	@echo "coverage - check code coverage quickly with the default Python and display result only into console"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
 	@echo "sdist - package"
+	@echo "celery-server - start celery server"
 
 clean: clean-build clean-pyc
 
@@ -32,10 +36,11 @@ test:
 test-ft:
 	python project_template/manage.py test functional_tests
 
-test-tox:
+test-all:
 	tox
 
-test-tox-ft:
+test-all-ft:
+    tox
 	tox -e py26-django16-ft,py27-django16-ft,py33-django16-ft
 
 coverage-console:
@@ -61,3 +66,7 @@ release: clean
 sdist: clean
 	python setup.py sdist
 	ls -l dist
+
+celery-server:
+    cd project_template
+    celery -A project_template worker -l info
