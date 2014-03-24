@@ -11,3 +11,4 @@ django-pdb
 selenium
 pyvirtualdisplay
 ipdb
+celery

@@ -300,7 +300,6 @@ INSTALLED_APPS = (
     # "django_pdb",
     "crispy_forms",
     # "functional_tests",
-    "djcelery",
 )
 
 # List of processors used by RequestContext to populate the context.
