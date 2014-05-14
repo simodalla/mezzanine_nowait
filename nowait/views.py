@@ -115,9 +115,11 @@ class BookingCreateView(LoginRequiredMixin, PageContextTitleMixin, FormView):
                                         'request': self.request})
             return redirect('.')
         else:
+            settings.use_editable()
             messages.success(self.request,
                              booking.success_message_on_creation)
             booking.send_emails_on_creation(self.request)
+            print("********", settings.NOWAIT_CALENDAR_TASK_ENABLE)
         return result
 
 

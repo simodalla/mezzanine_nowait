@@ -8,6 +8,7 @@ NOWAIT_APP_NAME = _('NoWait')
 NOWAIT_GROUP_ADMINS = ('nowait_admins', '*')
 NOWAIT_GROUP_OPERATORS = ('nowait_operators', '*')
 NOWAIT_ROOT_SLUG = 'nowait'
+NOWAIT_CALENDAR_TASK_ENABLE = False
 
 
 register_setting(
@@ -29,4 +30,11 @@ register_setting(
     description='Group of nowait admin users',
     editable=False,
     default=NOWAIT_GROUP_OPERATORS
+)
+
+register_setting(
+    name='NOWAIT_CALENDAR_TASK_ENABLE',
+    description='Enable calling of calendar task',
+    editable=True,
+    default=NOWAIT_CALENDAR_TASK_ENABLE
 )

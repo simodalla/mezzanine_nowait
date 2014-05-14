@@ -9,7 +9,7 @@ help:
 	@echo "test-all - run tests on every Python version with tox"
 	@echo "test-all-ft - run functional tests on every Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "coverage - check code coverage quickly with the default Python and display result only into console"
+	@echo "coverage-console - check code coverage quickly with the default Python and display result only into console"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
 	@echo "sdist - package"
@@ -39,8 +39,7 @@ test-ft:
 test-all:
 	tox
 
-test-all-ft:
-    tox
+test-all-ft: tox-all
 	tox -e py26-django16-ft,py27-django16-ft,py33-django16-ft
 
 coverage-console:
@@ -68,5 +67,4 @@ sdist: clean
 	ls -l dist
 
 celery-server:
-    cd project_template
-    celery -A project_template worker -l info
+	celery --workdir=project_template/ -A project_template worker -l info

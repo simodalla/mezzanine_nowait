@@ -159,6 +159,28 @@ class BookingCreateViewTest(RequestMessagesTestMixin, TestCase):
         self.mock_instance.send_emails_on_creation.assert_called_once_with(
             request)
 
+    @patch('nowait.views.settings.NOWAIT_CALENDAR_TASK_ENABLE', True, create=True)
+    @patch('nowait.tasks.create_operators_event', spec=True)
+    @patch('nowait.views.messages')
+    @patch('django.forms.models.construct_instance', spec=True)
+    def test_on_form_valid_call_task_create_operators_event(
+            self, mock_construct_instance, mock_messages, mock_task):
+        """
+        Test that call message.success on form_valid
+        """
+        # mock_sncte.return_value = False
+        factory = RequestFactory()
+        request = factory.post(self.url, self.data)
+        request.user = self.booker
+        mock_construct_instance.return_value = self.mock_instance
+        BookingCreateView.as_view()(
+            request, **{'slottime_pk': self.slottime.pk})
+
+        print(mock_task.mock_calls)
+        mock_task.assert_is_called_once_with()
+        # self.mock_instance.send_emails_on_creation.assert_called_once_with(
+        #     request)
+
     @patch('nowait.views.messages')
     @patch('django.forms.models.construct_instance', spec=True)
     def test_in_on_form_occurs_exception_and_message_error_is_called(
